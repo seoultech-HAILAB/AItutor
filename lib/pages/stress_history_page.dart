@@ -152,11 +152,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                 fontWeight: FontWeight.bold,
               )),
               majorGridLines: const MajorGridLines(width: 0),
-              minimum: 1,
-              maximum: 5,
+              minimum: 0,
+              maximum: 6,
               interval: 1,
               axisLabelFormatter: (AxisLabelRenderDetails details) {
                 switch (details.value.toInt()) {
+                  case 0:
+                    return ChartAxisLabel('', const TextStyle(color: Colors.transparent));  // 0에 대한 처리 (투명 라벨)
                   case 1:
                     return ChartAxisLabel('매우 낮음', const TextStyle(color: Colors.black));
                   case 2:
@@ -167,6 +169,8 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                     return ChartAxisLabel('높음', const TextStyle(color: Colors.black));
                   case 5:
                     return ChartAxisLabel('매우 높음', const TextStyle(color: Colors.black));
+                  case 6:
+                    return ChartAxisLabel('', const TextStyle(color: Colors.transparent));  // 6에 대한 처리 (투명 라벨)
                   default:
                     return ChartAxisLabel('', const TextStyle(color: Colors.black));
                 }
@@ -384,14 +388,14 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
     required bool isHistory,
     required screenHeight,
   }) {
-    String imgPath = ConvertStressImg().getStressImg('cause', detail);
 
     if (isHistory) {
-      return historyBodyWidget(screenWidth, screenHeight, '스트레스 원인', 'cause', detail,);
+      return historyBodyWidget(screenWidth, screenHeight, '스트레스 원인', 'cause', detail);
     } else {
       Map summary = _recentResult.summary['cause'] ?? {};
       Map feedback = _recentResult.feedback['cause'] ?? {};
       String key = summary.isEmpty ? "" : summary.keys.first;
+      String imgPath = ConvertStressImg().getStressImg('cause', key);
 
       return Padding(
         padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
@@ -432,7 +436,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Center(
-                      child: Text("$detail", style: const TextStyle(
+                      child: Text("$key", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -466,11 +470,11 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
 
   Widget historyBodyWidget(screenWidth, screenHeight, String title, String category, String detail) {
     try {
-      String imgPath = ConvertStressImg().getStressImg('$category', detail);
       Map summary = (_selectResult.summary ?? {})['$category'] ?? {};
       Map feedback = (_selectResult.feedback ?? {})['$category'] ?? {};
       String key = summary.isEmpty ? "" : summary.keys.first;
       String defaultImg = "board";
+      String imgPath = ConvertStressImg().getStressImg('$category', key);
 
       if (category == 'cause') {
         defaultImg = "board";
@@ -567,14 +571,14 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
     required bool isHistory,
     required screenHeight,
   }) {
-    String imgPath = ConvertStressImg().getStressImg('symptom', detail);
 
     if (isHistory) {
-      return historyBodyWidget(screenWidth,screenHeight, '스트레스 증상', 'symptom', detail, );
+      return historyBodyWidget(screenWidth,screenHeight, '스트레스 증상', 'symptom', detail);
     } else {
       Map summary = _recentResult.summary['symptom'] ?? {};
       Map feedback = _recentResult.feedback['symptom'] ?? {};
       String key = summary.isEmpty ? "" : summary.keys.first;
+      String imgPath = ConvertStressImg().getStressImg('symptom', key);
 
       return Padding(
         padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
@@ -615,7 +619,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Center(
-                      child: Text("$detail", style: const TextStyle(
+                      child: Text("$key", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -655,14 +659,15 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
     required screenHeight,
   }) {
 
-    String imgPath = ConvertStressImg().getStressImg('coping', detail);
+
 
     if (isHistory) {
-      return historyBodyWidget(screenWidth, screenHeight, '대처 방안', 'coping', detail,);
+      return historyBodyWidget(screenWidth, screenHeight, '대처 방안', 'coping', detail);
     } else {
       Map summary = _recentResult.summary['coping'] ?? {};
       Map feedback = _recentResult.feedback['coping'] ?? {};
       String key = summary.isEmpty ? "" : summary.keys.first;
+      String imgPath = ConvertStressImg().getStressImg('coping', key);
 
       return Padding(
         padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
@@ -703,7 +708,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Center(
-                      child: Text("$detail", style: const TextStyle(
+                      child: Text("$key", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -1007,3 +1012,4 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
   }
 
 }
+
