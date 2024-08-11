@@ -16,6 +16,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key,}) : super(key: key);
@@ -46,6 +47,13 @@ class _ChatScreenState extends State<ChatScreen> {
       promptInit();
       userInit();
     });
+
+  @override
+  Widget build(BuildContext context) {
+    _pageProvider = Provider.of<PageProvider>(context, listen: true);
+    bool isWeb = ClassificationPlatform().classifyWithScreenSize(context: context) == 2;
+
+    return bodyWidget(isWeb);}
   }
 
   @override
@@ -127,11 +135,10 @@ class _ChatScreenState extends State<ChatScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _pageProvider.isNoteApp ? SizedBox(
-                  width: screenWidth * 0.47,
-                  child: const NoteWidget()) : SizedBox(
-                  width: screenWidth * 0.47,
-                  child: const PdfViewerWidget()),
+              SizedBox(
+                width: screenWidth * 0.47,  // Row의 두 칸 중 하나만 사용하므로 width를 screenWidth의 0.94로 설정
+                child: const NoteWidget(),
+              ),
               Container(
                 width: screenWidth * 0.47,
                 height: screenHeight * 0.8,
@@ -452,67 +459,109 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessage(Map<String, dynamic> message, double width) {
-    // 메세지의 주인이 사용자냐 GPT냐를 판단하기 위함
-    bool isUser = message['role'] == 'user';
+  bool isUser = message['role'] == 'user';
+  final urlPattern = RegExp(r'https?:\/\/[^\s]+');
 
-    return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,  // 유저면 오른쪽에 배치
-      child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          isUser ? Container() : _pageProvider.selectChatModel.img == null ? Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12)
-            ),
-            width: 50,
-            height: 50,
-            child: Image.asset("assets/icons/img.png", fit: BoxFit.cover,),
-          ) :
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(12)), // 곡률 설정
-            child: Image.network(
-              _pageProvider.selectChatModel.img,  // 이미지 링크 url
-              key: ValueKey(_pageProvider.selectChatModel.img), // 각 위젯의 고유키 설정
-              fit: BoxFit.cover,  // 비율 유지 꽉 채움
-              height: 50,
-              width: 50,
-              errorBuilder: (context, error, stackTrace) {
-                print('img error ${error}');
-                // 오류났을 경우의 위젯, 기본 사진으로 설정
-                return Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12)
-                  ),
-                  width: 50,
-                  height: 50,
-                  child: Image.asset("assets/icons/user.png", fit: BoxFit.cover,),
-                );
-              },
-            ),
+  return Align(
+    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+    child: Row(
+      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        isUser ? Container() : _pageProvider.selectChatModel.img == null ? Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12)
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            padding: const EdgeInsets.all(10),
-            constraints: BoxConstraints(maxWidth: width),  // 박스의 최대 폭을 지정
-            decoration: BoxDecoration(
-              color: isUser ? _colorsModel.userTextBox : _colorsModel.gptTextBox,  // 유저면 노란색 말풍선
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,  // 전송자에 따라 위치를 다르게 하기 위함
-              children: [
-                SelectableText(
-                  message['content'] ?? "",  // ?? : ??앞의 값이 null이면 물음표 뒤의 값을 리턴
+          width: 50,
+          height: 50,
+          child: Image.asset("assets/icons/img.png", fit: BoxFit.cover,),
+        ) :
+        ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          child: Image.network(
+            _pageProvider.selectChatModel.img,
+            key: ValueKey(_pageProvider.selectChatModel.img),
+            fit: BoxFit.cover,
+            height: 50,
+            width: 50,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12)
+                ),
+                width: 50,
+                height: 50,
+                child: Image.asset("assets/icons/user.png", fit: BoxFit.cover,),
+              );
+            },
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          padding: const EdgeInsets.all(10),
+          constraints: BoxConstraints(maxWidth: width),
+          decoration: BoxDecoration(
+            color: isUser ? _colorsModel.userTextBox : _colorsModel.gptTextBox,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: TextSpan(
+                  children: _getMessageTextSpans(message['content'] ?? ""),
                   style: const TextStyle(color: Colors.black, fontSize: 16),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ),
+  );
+}
+
+List<TextSpan> _getMessageTextSpans(String message) {
+  final urlPattern = RegExp(r'https?:\/\/[^\s]+');
+  final List<TextSpan> spans = [];
+  int start = 0;
+
+  for (final match in urlPattern.allMatches(message)) {
+    if (match.start > start) {
+      spans.add(TextSpan(text: message.substring(start, match.start)));
+    }
+
+    spans.add(TextSpan(
+      text: match.group(0),
+      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+      recognizer: TapGestureRecognizer()..onTap = () {
+        _launchURL(match.group(0)!);
+      },
+    ));
+    
+    start = match.end;
+  }
+
+  if (start < message.length) {
+    spans.add(TextSpan(text: message.substring(start)));
+  }
+
+  return spans;
+}
+
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+        enableJavaScript: true,
+        enableDomStorage: true,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   // 서버에서 유저정보를 가져옴
@@ -541,23 +590,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // 초기 메세지 설정
   void _addInitialMessage() {
-    setState(() {
-      String initialMessage;
+  setState(() {
+    String initialMessage;
 
-      if (_pageProvider.selectChatModel.type == 'stress') {
-        initialMessage = '안녕 만나서 반가워! 나는 연우라고 해. 너는 이름이 뭐야?';
-      } else if (_pageProvider.selectChatModel.type == 'debate') {
-        initialMessage = '안녕! 나는 오늘 너와 함께 토론을 진행할 토론 파트너야. 만나서 반가워.';
-      } else {
-        initialMessage = '안녕하세요!';
-      }
+    if (_pageProvider.selectChatModel.type == 'stress') {
+      initialMessage = '안녕 만나서 반가워! 나는 연우라고 해. 너는 이름이 뭐야?';
+    } else if (_pageProvider.selectChatModel.type == 'debate') {
+      initialMessage = '안녕! 나는 오늘 너와 함께 토론을 진행할 토론 파트너야. 만나서 반가워.';
+    } else {
+      initialMessage = '안녕하세요! 저는 글쓰기를 지원하는 파트너입니다. 만나서 반갑습니다. \n\n'
+                       '아래는 국내 인공지능 법률 초기 입법에 대한 읽기자료입니다. 읽기자료를 모두 읽은 후 대화를 시작해주세요. \n\n'
+                       '링크: https://drive.google.com/file/d/1WL6aUt39ZZCT5hACFs9vvtvI3oGESw6W/view?usp=drive_link';
+    }
 
-      _messages.add({
-        'role': 'assistant',
-        'content': initialMessage,
-        'time': DateTime.now().toIso8601String(),
-      });
+    _messages.add({
+      'role': 'assistant',
+      'content': initialMessage,
+      'time': DateTime.now().toIso8601String(),
     });
-  }}
+  });
+  }
+}

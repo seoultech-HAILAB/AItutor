@@ -245,30 +245,7 @@ class _NoteWidgetState extends State<NoteWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  GestureDetector(
-                    onTap: () async {
-                      _saveNote();
-                      _pageProvider.updateIsNoteApp(false);
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        width: screenWidth * 0.15,
-                        decoration: BoxDecoration(
-                          color: _colorsModel.wh,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _colorsModel.bl),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10),
-                          child: Text('저장 & 읽기자료 보기', style: TextStyle(
-                            color: _colorsModel.bl,
-                            fontSize: 16,
-                          ),textAlign: TextAlign.center),
-                        ),
-                      ),
-                    ),
-                  ),
+                  
                   GestureDetector(
                     onTap: () async {
                       setState(() {
