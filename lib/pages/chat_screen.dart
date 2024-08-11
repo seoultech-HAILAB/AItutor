@@ -88,55 +88,85 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Padding(
             padding: EdgeInsets.only(left: screenWidth * 0.019),
-            child: Container(
-              width: screenWidth * 0.25,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: _colorsModel.wh,
-                border: Border.all(color: _colorsModel.bl),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+            child: Row(
+              children: [
+                Container(
+                  width: screenWidth * 0.25,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: _colorsModel.wh,
+                    border: Border.all(color: _colorsModel.bl),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              color: _iconColor,
-                              borderRadius: BorderRadius.circular(12)
-                          ),
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: SelectableText("${docsModel.iconNm}", style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),),
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: _iconColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              width: 40,
+                              height: 40,
+                              child: Center(
+                                child: SelectableText(
+                                  "${docsModel.iconNm}",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            SelectableText(
+                              "${docsModel.title ?? ''}",
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 10,),
-                        SelectableText("${docsModel.title ?? ''}", style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                SizedBox(width: screenWidth * 0.02), // Space between the boxes
+                Container(
+                  width: screenWidth * 0.5,  // 좌우로 더 길게 설정
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: _colorsModel.wh,
+                    border: Border.all(color: _colorsModel.bl),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(10), // 패딩은 원래대로 유지
+                    child: Text(
+                      "주제: “엄격한 규제를 통한 안전한 AI 산업 육성” vs “탄력적 규제를 통한 혁신적 AI 산업 육성”",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SizedBox(
-                width: screenWidth * 0.47,  // Row의 두 칸 중 하나만 사용하므로 width를 screenWidth의 0.94로 설정
+                width: screenWidth * 0.47, // Row의 두 칸 중 하나만 사용하므로 width를 screenWidth의 0.94로 설정
                 child: const NoteWidget(),
               ),
               Container(
@@ -153,7 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   },
                   child: Column(
                     children: [
-                      Expanded(  // Expanded를 써야 ListView가 차지할 크기를 알 수 있기에 사용할 수 있는 크기를 전부 사용하라는 의미
+                      Expanded( // Expanded를 써야 ListView가 차지할 크기를 알 수 있기에 사용할 수 있는 크기를 전부 사용하라는 의미
                         child: ListView.builder(
                           controller: _scrollController,
                           itemCount: _messages.length,
@@ -172,7 +202,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             Expanded(
                               child: TextField(
                                 controller: _controller,
-                                maxLines: null,  // 엔터를 눌러 다음 줄을 생성하기 위함
+                                maxLines: null, // 엔터를 눌러 다음 줄을 생성하기 위함
                                 textInputAction: TextInputAction.send,
                                 onSubmitted: (_) {
                                   _sendMessage();
@@ -207,7 +237,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
-                                    // borderSide: BorderSide.none,
                                     borderSide: BorderSide(
                                       color: _colorsModel.textInputBorder,
                                       width: 1,
@@ -223,7 +252,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color:  _colorsModel.textInputBorder,
+                                      color: _colorsModel.textInputBorder,
                                       width: 1,
                                     ),
                                     borderRadius: BorderRadius.circular(12),
