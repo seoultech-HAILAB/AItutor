@@ -76,17 +76,32 @@ class _ArgumentHomeState extends State<ArgumentHome> {
               const SizedBox(height: 30,),
               Expanded(
                 child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-                      childAspectRatio: 3 / 1, //item 의 가로, 세로의 비율
-                      mainAxisSpacing: 30, //수직 Padding
-                      crossAxisSpacing: 100, //수평 Padding
-                    ),
-                    itemCount: _docs.length,
-                    itemBuilder: (BuildContext context, int index) {
-
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // 1 개의 행에 보여줄 item 개수
+                    childAspectRatio: 3 / 1, // item 의 가로, 세로의 비율
+                    mainAxisSpacing: 30, // 수직 Padding
+                    crossAxisSpacing: 100, // 수평 Padding
+                  ),
+                  itemCount: _docs.length + 1, // Adjust the count for the dummy box
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == _docs.length) {
+                      // Return the dummy box when reaching the extra index
+                      return docWidget(
+                        DocsModel(
+                          iconNm: "중",  // Same icon
+                          title: "트롤리 딜레마",  // Change to the desired title
+                          explain: "\"선로를 돌려야 한다\" vs \"선로를 돌리면 안된다\" 를 주제로한 글쓰기를 도와줍니다",  // Description for dummy box
+                        ),
+                        screenWidth,
+                        isWeb,
+                        disableClick: true,  // Disable click for the dummy box
+                      );
+                    } else {
+                      // Original docWidget
                       return docWidget(_docs[index], screenWidth, isWeb);
-                    }),
+                    }
+                  },
+                ),
               ),
             ],
           ),
@@ -178,8 +193,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
     );
   }
 
-  Widget docWidget(DocsModel docsModel, screenWidth, bool isWeb) {
-
+  Widget docWidget(DocsModel docsModel, screenWidth, bool isWeb, {bool disableClick = false}) {
     Color _iconColor = _colorsModel.lightGreen;
 
     if (docsModel.iconNm == "상") {
@@ -191,13 +205,13 @@ class _ArgumentHomeState extends State<ArgumentHome> {
     }
 
     return GestureDetector(
-      onTap: () {
+      onTap: disableClick ? null : () {
         _pageProvider.updateSelectDocsModel(docsModel);
         _pageProvider.updateIsNoteApp(false);
         _pageProvider.updatePage(1);
       },
       child: MouseRegion(
-        cursor: SystemMouseCursors.click,
+        cursor: disableClick ? SystemMouseCursors.basic : SystemMouseCursors.click,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
