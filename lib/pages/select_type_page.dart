@@ -136,13 +136,13 @@ class _SelectTypePageState extends State<SelectTypePage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("${chatModel.name ?? ''}", style: const TextStyle(
-                      fontSize: 17,
+                    Text("${chatModel.key ?? ''}", style: const TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),),
-                    Text("${_linkedTimeMap[chatModel.name] ?? "${chatModel.name}와 대화해보세요!"}", style: TextStyle(
-                      fontSize: 13,
+                    Text("${_linkedTimeMap[chatModel.key] ?? "${chatModel.key}와 대화해보세요!"}", style: TextStyle(
+                      fontSize: 18,
                       color: _colorsModel.gr2,
                     ),textAlign: TextAlign.center,),
                   ],
@@ -162,7 +162,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
             ),
             const SizedBox(height: 10,),
             Text("${chatModel.explain ?? ''}", style: TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               color: _colorsModel.gr2,
             ),textAlign: TextAlign.center,),
             !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌

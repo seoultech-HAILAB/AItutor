@@ -168,12 +168,12 @@ class _ArgumentHomeState extends State<ArgumentHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("${chatModel.key ?? ''}", style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),),
                     Text("${_linkedTimeMap[chatModel.key] ?? "${chatModel.key}와 대화해보세요!"}", style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 16,
                       color: _colorsModel.gr2,
                     ),textAlign: TextAlign.center,),
                   ],
@@ -183,7 +183,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
             ),
             const SizedBox(height: 10,),
             Text("${chatModel.explain ?? ''}", style: TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               color: _colorsModel.gr2,
             ),textAlign: TextAlign.center,),
             !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
@@ -236,14 +236,14 @@ class _ArgumentHomeState extends State<ArgumentHome> {
                       height: 50,
                       child: Center(
                         child: Text("${docsModel.iconNm}", style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),),
                       ),
                     ),
                     const SizedBox(width: 10,),
                     Text("${docsModel.title ?? ''}", style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),),
@@ -251,7 +251,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
                 ),
                 const SizedBox(height: 10,),
                 Text("${docsModel.explain ?? ''}", style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   color: _colorsModel.gr2,
                 ),textAlign: TextAlign.center,),
                 !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
