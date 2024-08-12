@@ -126,7 +126,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
             child: const Padding(
               padding: EdgeInsets.only(top: 10, bottom: 10),
               child: Center(
-                child: Text("지난 결과 조회", style: TextStyle(
+                child: Text("지난 결과 조회하기", style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),),
@@ -238,16 +238,43 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                 ],
               ),
               const SizedBox(height: 20,),
-              causeWidget(detail: groupDetails['스트레스 원인'], isWeb: isWeb, screenWidth: screenWidth, isHistory: true, screenHeight: screenHeight),
-              const SizedBox(height: 20,),
-              symptomWidget(detail: groupDetails['스트레스 증상'], isWeb: isWeb, screenWidth: screenWidth, isHistory: true, screenHeight: screenHeight),
-              const SizedBox(height: 20,),
-              solutionWidget(detail: groupDetails['대처 방안'], isWeb: isWeb, screenWidth: screenWidth, isHistory: true, screenHeight: screenHeight),
-            ],
-          ),
-          const SizedBox(height: 60),
-        ],
-      ),
+              Row(  // 수정된 부분: 가로 배열
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: causeWidget(
+                      detail: groupDetails['스트레스 원인'],
+                      isWeb: isWeb,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      isHistory: true,
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: symptomWidget(
+                      detail: groupDetails['스트레스 증상'],
+                      isWeb: isWeb,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      isHistory: true,
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: solutionWidget(
+                      detail: groupDetails['대처 방안'],
+                      isWeb: isWeb,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      isHistory: true,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 60),
+            ],),
+      ],),
     );
   }
 
@@ -388,7 +415,6 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
     required bool isHistory,
     required screenHeight,
   }) {
-
     if (isHistory) {
       return historyBodyWidget(screenWidth, screenHeight, '스트레스 원인', 'cause', detail);
     } else {
@@ -403,21 +429,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
           width: screenWidth * 0.2,
           decoration: BoxDecoration(
             color: _colorsModel.gr4,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 4,
-                offset: Offset(0, 1), // changes position of shadow
-              ),
-            ],
           ),
           child: Padding(
-            padding:  const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+            padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
             child: Column(
               children: [
                 const Text("스트레스 원인", style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),),
@@ -437,7 +455,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                     padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Center(
                       child: Text("$key", style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),),
@@ -445,20 +463,50 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   ),
                 ),
                 const SizedBox(height: 15,),
-                summary.isEmpty ? Container() : SizedBox(
-                  width: screenWidth * 0.4,
-                  child: Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),),
+                summary.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<요약>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10,),
-                feedback.isEmpty ? Container() : SizedBox(
-                  width: screenWidth * 0.4,
-                  child: Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),),
+                feedback.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<상담 튜터의 한 마디>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -484,81 +532,105 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
         defaultImg = "friends";
       }
 
-      return Container(
-        width: screenWidth,
-        decoration: BoxDecoration(
-          color: _colorsModel.gr4,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 4,
-              offset: Offset(0, 1), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Padding(
-          padding:  const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-          child: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("${title}", style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                  const SizedBox(height: 10,),
-                  SizedBox(
-                    width: SizeCalculate().widthCalculate(screenWidth, 154),
-                    height: 139,
-                    child: Image.asset(imgPath.isNotEmpty ? 'assets/stressIcons/' + imgPath : "assets/icons/$defaultImg.png"),
-                  ),
-                  const SizedBox(height: 10,),
-                  Container(
-                    width: screenWidth * 0.2,
-                    decoration: BoxDecoration(
-                      color: _colorsModel.titleBox,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-                      child: Center(
-                        child: Text("$key", style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 10,),
-              Column(
-                children: [
-                  summary.isEmpty ? Container() : SizedBox(
-                    width: screenWidth * 0.4,
-                    child: Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),),
-                  ),
-                  const SizedBox(height: 10,),
-                  feedback.isEmpty ? Container() : SizedBox(
-                    width: screenWidth * 0.4,
-                    child: Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),),
-                  ),
-                ],
+      return Padding(
+        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+        child: Container(
+          width: screenWidth * 0.2,
+          decoration: BoxDecoration(
+            color: _colorsModel.gr4,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 4,
+                offset: Offset(0, 1), // changes position of shadow
               ),
             ],
           ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+            child: Column(
+              children: [
+                Text(title, style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),),
+                const SizedBox(height: 15,),
+                SizedBox(
+                  width: screenWidth * 0.2,
+                  height: 156,
+                  child: Image.asset(imgPath.isNotEmpty ? 'assets/stressIcons/' + imgPath : "assets/icons/$defaultImg.png"),
+                ),
+                const SizedBox(height: 15,),
+                Container(
+                  width: screenWidth * 0.2,
+                  decoration: BoxDecoration(
+                    color: _colorsModel.titleBox,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+                    child: Center(
+                      child: Text("$key", style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15,),
+                summary.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<요약>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10,),
+                feedback.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<상담 튜터의 한 마디>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
-    } catch(e) {
+    } catch (e) {
       print("error historyBodyWidget $e");
       return Container();
     }
@@ -600,7 +672,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
             child: Column(
               children: [
                 const Text("스트레스 증상", style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),),
@@ -620,7 +692,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                     padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Center(
                       child: Text("$key", style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),),
@@ -628,20 +700,50 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   ),
                 ),
                 const SizedBox(height: 15,),
-                summary.isEmpty ? Container() : SizedBox(
-                  width: screenWidth * 0.4,
-                  child: Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),),
+                summary.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<요약>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10,),
-                feedback.isEmpty ? Container() : SizedBox(
-                  width: screenWidth * 0.4,
-                  child: Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),),
+                feedback.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<상담 튜터의 한 마디>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -689,7 +791,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
             child: Column(
               children: [
                 const Text("대처 방안", style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),),
@@ -709,7 +811,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                     padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Center(
                       child: Text("$key", style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),),
@@ -717,20 +819,50 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   ),
                 ),
                 const SizedBox(height: 15,),
-                summary.isEmpty ? Container() : SizedBox(
-                  width: screenWidth * 0.4,
-                  child: Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),),
+                summary.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<요약>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10,),
-                feedback.isEmpty ? Container() : SizedBox(
-                  width: screenWidth * 0.4,
-                  child: Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),),
+                feedback.isEmpty ? Container() : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("<상담 튜터의 한 마디>", style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _colorsModel.gr1,
+                      )),
+                      const SizedBox(height: 5,),
+                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),),
+                    ],
+                  ),
                 ),
               ],
             ),
