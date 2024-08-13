@@ -600,7 +600,7 @@ List<TextSpan> _getMessageTextSpans(String message) {
         _userModel = resList.last;
       });
       await UserServices().updateLinkedTime(uid: _userModel.uid, chatModelKey: _pageProvider.selectChatModel.key);
-      await _loadChatMessages();
+      // await _loadChatMessages();
       if (_messages.isEmpty) {
         _addInitialMessage();
       }
