@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
+import 'dart:ui' as ui;
 
 class DebateHistoryPage extends StatefulWidget {
   const DebateHistoryPage({Key? key}) : super(key: key);
@@ -79,101 +80,111 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
     );
   }
 
-  Widget evaluateWidget(screenWidth, isWeb, List<DebateResult> evaluationResults) {
+  Widget evaluateWidget(double screenWidth, bool isWeb, List<DebateResult> evaluationResults) {
+    // 각 evaluationResult의 width와 height를 계산하기 위해 가장 긴 details의 height를 찾음
+    double maxHeight = evaluationResults.map((result) {
+      final textPainter = TextPainter(
+        text: TextSpan(text: result.details, style: const TextStyle(fontSize: 16)),
+        textDirection: ui.TextDirection.ltr, // 수정된 부분
+        maxLines: null,
+      );
+      textPainter.layout(maxWidth: (screenWidth - 120) / evaluationResults.length - 30); // padding 고려
+      return textPainter.height + 90; // 카테고리, 평가 텍스트와 상자의 기본 padding을 고려한 높이
+    }).reduce((curr, next) => curr > next ? curr : next);
+
     return Padding(
       padding: isWeb
           ? const EdgeInsets.only(left: 60, right: 60, bottom: 30)
           : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,  // 가로 스크롤 유지
-        child: Row(
-          children: evaluationResults.map((evaluationResult) {
-            Color evaluationColor = _colorsModel.blue;
+      child: Row(
+        children: evaluationResults.map((evaluationResult) {
+          Color evaluationColor = _colorsModel.blue;
 
-            if (evaluationResult.evaluation.toString().contains('상')) {
-              evaluationColor = _colorsModel.blue;
-            } else if (evaluationResult.evaluation.toString().contains('중')) {
-              evaluationColor = _colorsModel.orange;
-            } else if (evaluationResult.evaluation.toString().contains('하')) {
-              evaluationColor = _colorsModel.red;
-            }
+          if (evaluationResult.evaluation.toString().contains('상')) {
+            evaluationColor = _colorsModel.blue;
+          } else if (evaluationResult.evaluation.toString().contains('중')) {
+            evaluationColor = _colorsModel.orange;
+          } else if (evaluationResult.evaluation.toString().contains('하')) {
+            evaluationColor = _colorsModel.red;
+          }
 
-            return Padding(
-              padding: const EdgeInsets.only(right: 10),  // 각 박스 간의 간격 조정
-
-                child: Container(
-                  width: (screenWidth-120) / 4,  // 각 항목의 고정 가로 크기
-                  height: screenWidth * 0.7,
-                  decoration: BoxDecoration(
-                    color: _colorsModel.gr4,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 4,
-                        offset: Offset(0, 1),
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10), // 각 박스 간의 간격 조정
+              child: Container(
+                height: maxHeight + 120, // 모든 항목의 높이를 가장 긴 항목에 맞춤
+                decoration: BoxDecoration(
+                  color: _colorsModel.gr4,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Category (center aligned)
+                      Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "• ${evaluationResult.category}",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,  // 세로 스크롤 가능하게 설정
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Category (center aligned)
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "• ${evaluationResult.category}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                      const SizedBox(height: 10,),
+                      // Evaluation (center aligned)
+                      Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${evaluationResult.evaluation}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: evaluationColor,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(height: 10,),
-                          // Evaluation (center aligned)
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "${evaluationResult.evaluation}",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: evaluationColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20,),
-                          // Details (left aligned in a white box)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(10),
-                            color: Colors.white,
-                            child: Text(
+                        ),
+                      ),
+                      const SizedBox(height: 20,),
+                      // Details (left aligned in a white box)
+                      Container(
+                        width: double.infinity,
+                        height: maxHeight,
+                        padding: const EdgeInsets.all(10),
+                        color: Colors.white,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
                               "${evaluationResult.details}",
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 20,), // 여백 추가
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-            );
-          }).toList(),
-        ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
-
-
 
 
   Widget selectDateWidget(screenWidth, isWeb) {
