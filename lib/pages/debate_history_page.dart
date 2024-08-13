@@ -70,14 +70,8 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                   color: _colorsModel.gr1,
                 ),),
               ),
-            ) : ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: _results.length,
-              itemBuilder: (BuildContext context, int index) {
-                return evaluateWidget(screenWidth, isWeb, _results[index]);
-              },
-            ),
+            )
+                : evaluateWidget(screenWidth, isWeb, _results),  // _results 전체를 전달
           ],
         ),
         _loading ? Center(child: CircularProgressIndicator(color: _colorsModel.main,),) : Container()
@@ -85,71 +79,102 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
     );
   }
 
-  Widget evaluateWidget(screenWidth, isWeb, DebateResult evaluationResult) {
-    Color evaluationColor = _colorsModel.blue;
-
-    if (evaluationResult.evaluation.toString().contains('상')) {
-      evaluationColor = _colorsModel.blue;
-    } else if (evaluationResult.evaluation.toString().contains('중')) {
-      evaluationColor = _colorsModel.orange;
-    } else if (evaluationResult.evaluation.toString().contains('하')) {
-      evaluationColor = _colorsModel.red;
-    }
-
+  Widget evaluateWidget(screenWidth, isWeb, List<DebateResult> evaluationResults) {
     return Padding(
-      padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-      child: Container(
-        width: screenWidth,
-        decoration: BoxDecoration(
-          color: _colorsModel.gr4,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 4,
-              offset: Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, top: 30, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: screenWidth * 0.4,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text("• ${evaluationResult.category}", style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),),
-                    const SizedBox(height: 15,),
-                    Text("${evaluationResult.evaluation}", style: TextStyle(
-                      fontSize: 16,
-                      color: evaluationColor,
-                      fontWeight: FontWeight.bold,
-                    ),),
-                  ],
+      padding: isWeb
+          ? const EdgeInsets.only(left: 60, right: 60, bottom: 30)
+          : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,  // 가로 스크롤 유지
+        child: Row(
+          children: evaluationResults.map((evaluationResult) {
+            Color evaluationColor = _colorsModel.blue;
+
+            if (evaluationResult.evaluation.toString().contains('상')) {
+              evaluationColor = _colorsModel.blue;
+            } else if (evaluationResult.evaluation.toString().contains('중')) {
+              evaluationColor = _colorsModel.orange;
+            } else if (evaluationResult.evaluation.toString().contains('하')) {
+              evaluationColor = _colorsModel.red;
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 10),  // 각 박스 간의 간격 조정
+
+                child: Container(
+                  width: (screenWidth-120) / 4,  // 각 항목의 고정 가로 크기
+                  height: screenWidth * 0.7,
+                  decoration: BoxDecoration(
+                    color: _colorsModel.gr4,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 4,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,  // 세로 스크롤 가능하게 설정
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Category (center aligned)
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "• ${evaluationResult.category}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10,),
+                          // Evaluation (center aligned)
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "${evaluationResult.evaluation}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: evaluationColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20,),
+                          // Details (left aligned in a white box)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            color: Colors.white,
+                            child: Text(
+                              "${evaluationResult.details}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: screenWidth * 0.4,
-                child: Text("${evaluationResult.details}", style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),),
-              ),
-            ],
-          ),
+            );
+          }).toList(),
         ),
       ),
     );
   }
+
+
+
 
   Widget selectDateWidget(screenWidth, isWeb) {
     bool _isExpanded = false;
