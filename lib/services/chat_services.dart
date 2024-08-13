@@ -60,22 +60,23 @@ class ChatServices {
     try {
       // key는 Types에 저장된 채팅타입의 key
       // Chat/안에 여러개의 대화 타입이 있고 선택한 타입의 대화 기록중 특정 유저의 대화기록을 가져온다
-      final databaseRef = FirebaseDatabase.instance.ref('Chat/$chatModelKey/$uid');
-      final snapshot = await databaseRef.get();
-      if (snapshot.exists) {
-        List<Map<String, dynamic>> messages = [];
+      // final databaseRef = FirebaseDatabase.instance.ref('Chat/$chatModelKey/$uid');
+      // final snapshot = await databaseRef.get();
+      // if (snapshot.exists) {
+      //   List<Map<String, dynamic>> messages = [];
 
-        for (var data in snapshot.children) {
-          messages.add({
-            'time': data.child('time').value ?? "",
-            'role': data.child('role').value ?? "",
-            'content': data.child('content').value ?? "",
-          });
-        }
-        return messages;
-      } else {
-        return [];
-      }
+      //   for (var data in snapshot.children) {
+      //     messages.add({
+      //       'time': data.child('time').value ?? "",
+      //       'role': data.child('role').value ?? "",
+      //       'content': data.child('content').value ?? "",
+      //     });
+      //   }
+      //   return messages;
+      // } else {
+      //   return [];
+      // }
+      return [];
     } catch(e) {
       print('error loadChatMessages ${e}');
       return [];

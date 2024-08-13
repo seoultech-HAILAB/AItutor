@@ -386,11 +386,12 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _loadChatMessages() async {
     List<Map<String, dynamic>> messages = [];
 
-    if (_pageProvider.selectChatModel.type == 'stress') {
-      messages = await _chatServices.loadTodayChatMessages(chatModelKey: _pageProvider.selectChatModel.key, uid: _userModel.uid ?? "");
-    } else {
-      messages = await _chatServices.loadChatMessages(chatModelKey: _pageProvider.selectChatModel.key, uid: _userModel.uid ?? "");
-    }
+    // if (_pageProvider.selectChatModel.type == 'stress') {
+    //   messages = await _chatServices.loadTodayChatMessages(chatModelKey: _pageProvider.selectChatModel.key, uid: _userModel.uid ?? "");
+    // } else {
+    //   messages = await _chatServices.loadChatMessages(chatModelKey: _pageProvider.selectChatModel.key, uid: _userModel.uid ?? "");
+    // }
+    messages = await _chatServices.loadChatMessages(chatModelKey: _pageProvider.selectChatModel.key, uid: _userModel.uid ?? "");
     setState(() {
       _messages = messages;
       _messages.reversed;  // 뒤집어서 정렬
