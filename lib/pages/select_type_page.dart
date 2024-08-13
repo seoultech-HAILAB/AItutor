@@ -144,7 +144,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
                     Text("${_linkedTimeMap[chatModel.key] ?? "${chatModel.key}와 대화해보세요!"}", style: TextStyle(
                       fontSize: 18,
                       color: _colorsModel.gr2,
-                    ),textAlign: TextAlign.center,),
+                    ),textAlign: TextAlign.left,),
                   ],
                 ),
                 const Spacer(),
@@ -164,7 +164,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
             Text("${chatModel.explain ?? ''}", style: TextStyle(
               fontSize: 18,
               color: _colorsModel.gr2,
-            ),textAlign: TextAlign.center,),
+            ),textAlign: TextAlign.left,),
             !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
             const SizedBox(height: 10,),
             Padding(

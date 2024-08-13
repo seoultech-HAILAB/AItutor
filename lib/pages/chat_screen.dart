@@ -487,9 +487,37 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Widget _buildMessage(Map<String, dynamic> message, double width) {
-  bool isUser = message['role'] == 'user';
+List<TextSpan> _getMessageTextSpans(String message) {
   final urlPattern = RegExp(r'https?:\/\/[^\s]+');
+  final List<TextSpan> spans = [];
+  int start = 0;
+
+  for (final match in urlPattern.allMatches(message)) {
+    if (match.start > start) {
+      spans.add(TextSpan(text: message.substring(start, match.start)));
+    }
+
+    spans.add(TextSpan(
+      text: match.group(0),
+      style: TextStyle(color: Colors.blue),
+      recognizer: TapGestureRecognizer()
+        ..onTap = () {
+          _launchURL(match.group(0)!);
+        },
+    ));
+    
+    start = match.end;
+  }
+
+  if (start < message.length) {
+    spans.add(TextSpan(text: message.substring(start)));
+  }
+
+  return spans;
+}
+
+Widget _buildMessage(Map<String, dynamic> message, double width) {
+  bool isUser = message['role'] == 'user';
 
   return Align(
     alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -537,8 +565,8 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
-              RichText(
-                text: TextSpan(
+              SelectableText.rich(
+                TextSpan(
                   children: _getMessageTextSpans(message['content'] ?? ""),
                   style: const TextStyle(color: Colors.black, fontSize: 16),
                 ),
@@ -549,34 +577,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ],
     ),
   );
-}
-
-List<TextSpan> _getMessageTextSpans(String message) {
-  final urlPattern = RegExp(r'https?:\/\/[^\s]+');
-  final List<TextSpan> spans = [];
-  int start = 0;
-
-  for (final match in urlPattern.allMatches(message)) {
-    if (match.start > start) {
-      spans.add(TextSpan(text: message.substring(start, match.start)));
-    }
-
-    spans.add(TextSpan(
-      text: match.group(0),
-      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-      recognizer: TapGestureRecognizer()..onTap = () {
-        _launchURL(match.group(0)!);
-      },
-    ));
-    
-    start = match.end;
-  }
-
-  if (start < message.length) {
-    spans.add(TextSpan(text: message.substring(start)));
-  }
-
-  return spans;
 }
 
   Future<void> _launchURL(String url) async {

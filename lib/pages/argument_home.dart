@@ -185,7 +185,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
             Text("${chatModel.explain ?? ''}", style: TextStyle(
               fontSize: 18,
               color: _colorsModel.gr2,
-            ),textAlign: TextAlign.center,),
+            ),textAlign: TextAlign.left,),
             !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
           ],
         ),
@@ -253,7 +253,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
                 Text("${docsModel.explain ?? ''}", style: TextStyle(
                   fontSize: 18,
                   color: _colorsModel.gr2,
-                ),textAlign: TextAlign.center,),
+                ),textAlign: TextAlign.left,),
                 !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
               ],
             ),
