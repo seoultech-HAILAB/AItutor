@@ -517,68 +517,63 @@ List<TextSpan> _getMessageTextSpans(String message) {
   return spans;
 }
 
-Widget _buildMessage(Map<String, dynamic> message, double width) {
-  bool isUser = message['role'] == 'user';
+  Widget _buildMessage(Map<String, dynamic> message, double width) {
+    bool isUser = message['role'] == 'user';
 
-  return Align(
-    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-    child: Row(
-      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        isUser ? Container() : _pageProvider.selectChatModel.img == null ? Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12)
+    // 이미지 경로를 chatModel.type에 따라 설정
+    String imagePath;
+    switch (_pageProvider.selectChatModel.type) {
+      case "argument":
+        imagePath = "assets/icons/argument.png";
+        break;
+      case "debate":
+        imagePath = "assets/icons/debate.png";
+        break;
+      case "stress":
+        imagePath = "assets/icons/counsel.png";
+        break;
+      default:
+        imagePath = "assets/icons/default.png"; // 기본 이미지 경로 설정
+    }
+
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Row(
+        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          isUser ? Container() : ClipRRect(
+            borderRadius: BorderRadius.circular(12),  // 둥근 사각형을 위해 모서리 반경 설정
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              width: 50,
+              height: 50,
+            ),
           ),
-          width: 50,
-          height: 50,
-          child: Image.asset("assets/icons/img.png", fit: BoxFit.cover,),
-        ) :
-        ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
-          child: Image.network(
-            _pageProvider.selectChatModel.img,
-            key: ValueKey(_pageProvider.selectChatModel.img),
-            fit: BoxFit.cover,
-            height: 50,
-            width: 50,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12)
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            padding: const EdgeInsets.all(10),
+            constraints: BoxConstraints(maxWidth: width),
+            decoration: BoxDecoration(
+              color: isUser ? _colorsModel.userTextBox : _colorsModel.gptTextBox,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                SelectableText.rich(
+                  TextSpan(
+                    children: _getMessageTextSpans(message['content'] ?? ""),
+                    style: const TextStyle(color: Colors.black, fontSize: 16),
+                  ),
                 ),
-                width: 50,
-                height: 50,
-                child: Image.asset("assets/icons/user.png", fit: BoxFit.cover,),
-              );
-            },
+              ],
+            ),
           ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-          padding: const EdgeInsets.all(10),
-          constraints: BoxConstraints(maxWidth: width),
-          decoration: BoxDecoration(
-            color: isUser ? _colorsModel.userTextBox : _colorsModel.gptTextBox,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Column(
-            crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              SelectableText.rich(
-                TextSpan(
-                  children: _getMessageTextSpans(message['content'] ?? ""),
-                  style: const TextStyle(color: Colors.black, fontSize: 16),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Future<void> _launchURL(String url) async {
     if (await canLaunch(url)) {
