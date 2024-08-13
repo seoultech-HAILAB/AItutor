@@ -134,102 +134,98 @@ class _NoteWidgetState extends State<NoteWidget> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Stack(
-          alignment: Alignment.bottomCenter,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                quil.QuillToolbar(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        QuillToolbarHistoryButton(
-                          isUndo: true,
-                          controller: _quillController,
-                        ),
-                        QuillToolbarHistoryButton(
-                          isUndo: false,
-                          controller: _quillController,
-                        ),
-                        QuillToolbarToggleStyleButton(
-                          options: const QuillToolbarToggleStyleButtonOptions(),
-                          controller: _quillController,
-                          attribute: Attribute.bold,
-                        ),
-                        QuillToolbarToggleStyleButton(
-                          options: const QuillToolbarToggleStyleButtonOptions(),
-                          controller: _quillController,
-                          attribute: Attribute.italic,
-                        ),
-                        QuillToolbarToggleStyleButton(
-                          controller: _quillController,
-                          attribute: Attribute.underline,
-                        ),
-                        QuillToolbarClearFormatButton(
-                          controller: _quillController,
-                        ),
-                        const VerticalDivider(),
-                        // QuillToolbarImageButton(
-                        //   controller: _quillController,
-                        // ),
-                        // QuillToolbarCameraButton(
-                        //   controller: _quillController,
-                        // ),
-                        QuillToolbarCustomButton(
-                          controller: _quillController,
-                        ),
-                        const VerticalDivider(),
-                        QuillToolbarColorButton(
-                          controller: _quillController,
-                          isBackground: false,
-                        ),
-                        QuillToolbarColorButton(
-                          controller: _quillController,
-                          isBackground: true,
-                        ),
-                        const VerticalDivider(),
-                        QuillToolbarToggleCheckListButton(
-                          controller: _quillController,
-                        ),
-                        QuillToolbarToggleStyleButton(
-                          controller: _quillController,
-                          attribute: Attribute.ol,
-                        ),
-                        QuillToolbarToggleStyleButton(
-                          controller: _quillController,
-                          attribute: Attribute.ul,
-                        ),
-                        QuillToolbarToggleStyleButton(
-                          controller: _quillController,
-                          attribute: Attribute.inlineCode,
-                        ),
-                        QuillToolbarToggleStyleButton(
-                          controller: _quillController,
-                          attribute: Attribute.blockQuote,
-                        ),
-                        QuillToolbarIndentButton(
-                          controller: _quillController,
-                          isIncrease: true,
-                        ),
-                        QuillToolbarIndentButton(
-                          controller: _quillController,
-                          isIncrease: false,
-                        ),
-                        const VerticalDivider(),
-                        QuillToolbarLinkStyleButton(controller: _quillController),
-                      ],
+            quil.QuillToolbar(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    QuillToolbarHistoryButton(
+                      isUndo: true,
+                      controller: _quillController,
                     ),
-                  ),
+                    QuillToolbarHistoryButton(
+                      isUndo: false,
+                      controller: _quillController,
+                    ),
+                    QuillToolbarToggleStyleButton(
+                      options: const QuillToolbarToggleStyleButtonOptions(),
+                      controller: _quillController,
+                      attribute: Attribute.bold,
+                    ),
+                    QuillToolbarToggleStyleButton(
+                      options: const QuillToolbarToggleStyleButtonOptions(),
+                      controller: _quillController,
+                      attribute: Attribute.italic,
+                    ),
+                    QuillToolbarToggleStyleButton(
+                      controller: _quillController,
+                      attribute: Attribute.underline,
+                    ),
+                    QuillToolbarClearFormatButton(
+                      controller: _quillController,
+                    ),
+                    const VerticalDivider(),
+                    QuillToolbarCustomButton(
+                      controller: _quillController,
+                    ),
+                    const VerticalDivider(),
+                    QuillToolbarColorButton(
+                      controller: _quillController,
+                      isBackground: false,
+                    ),
+                    QuillToolbarColorButton(
+                      controller: _quillController,
+                      isBackground: true,
+                    ),
+                    const VerticalDivider(),
+                    QuillToolbarToggleCheckListButton(
+                      controller: _quillController,
+                    ),
+                    QuillToolbarToggleStyleButton(
+                      controller: _quillController,
+                      attribute: Attribute.ol,
+                    ),
+                    QuillToolbarToggleStyleButton(
+                      controller: _quillController,
+                      attribute: Attribute.ul,
+                    ),
+                    QuillToolbarToggleStyleButton(
+                      controller: _quillController,
+                      attribute: Attribute.inlineCode,
+                    ),
+                    QuillToolbarToggleStyleButton(
+                      controller: _quillController,
+                      attribute: Attribute.blockQuote,
+                    ),
+                    QuillToolbarIndentButton(
+                      controller: _quillController,
+                      isIncrease: true,
+                    ),
+                    QuillToolbarIndentButton(
+                      controller: _quillController,
+                      isIncrease: false,
+                    ),
+                    const VerticalDivider(),
+                    QuillToolbarLinkStyleButton(controller: _quillController),
+                  ],
                 ),
-                quil.QuillEditor.basic(
+              ),
+            ),
+            Expanded(
+              child: Container(
+                child: quil.QuillEditor.basic(
                   configurations: quil.QuillEditorConfigurations(
-                    minHeight: 400,
                     controller: _quillController,
                     autoFocus: false,
                     showCursor: true,
-                    textSelectionThemeData: TextSelectionThemeData(cursorColor: _colorsModel.bl, selectionColor: _colorsModel.bl, selectionHandleColor: _colorsModel.bl,),
+                    textSelectionThemeData: TextSelectionThemeData(
+                      cursorColor: _colorsModel.bl,
+                      selectionColor: _colorsModel.bl,
+                      selectionHandleColor: _colorsModel.bl,
+                    ),
                     customStyles: DefaultStyles(
                       color: _colorsModel.bl,
                     ),
@@ -237,54 +233,26 @@ class _NoteWidgetState extends State<NoteWidget> {
                       locale: Locale('ko'),
                     ),
                   ),
-                )
-              ],
+                ),
+              ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  
-                  GestureDetector(
-                    onTap: () async {
-                      setState(() {
-                        _loading = true;
-                      });
-
-                      final contents = jsonEncode(_quillController.document.toDelta().toJson());
-                      List resList = await ArgumentServices().saveNote(key: _pageProvider.selectDocsModel.key ?? "", uid: AuthService().getUid() ?? "", contents: contents);
-
-                      setState(() {
-                        _loading = false;
-                      });
-
-                      if (!resList.first) {
-                        Dialogs().onlyContentOneActionDialog(context: context, content: '제출오류\n${resList.last}', firstText: '확인');
-                      } else {
-                        Dialogs().onlyContentOneActionDialog(context: context, content: '제출이 완료되었습니다.', firstText: '확인');
-                      }
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        width: screenWidth * 0.15,
-                        decoration: BoxDecoration(
-                          color: _colorsModel.wh,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _colorsModel.bl),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10),
-                          child: Text('제출하기', style: TextStyle(
-                            color: _colorsModel.bl,
-                            fontSize: 16,
-                          ),textAlign: TextAlign.center,),
-                        ),
-                      ),
-                    ),
+            Container(
+              width: screenWidth * 0.15,
+              decoration: BoxDecoration(
+                color: _colorsModel.wh,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _colorsModel.bl),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: Text(
+                  '제출하기',
+                  style: TextStyle(
+                    color: _colorsModel.bl,
+                    fontSize: 16,
                   ),
-                ],
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ],

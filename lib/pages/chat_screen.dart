@@ -166,8 +166,10 @@ class _ChatScreenState extends State<ChatScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SizedBox(
-                width: screenWidth * 0.47, // Row의 두 칸 중 하나만 사용하므로 width를 screenWidth의 0.94로 설정
-                child: const NoteWidget(),
+                width: screenWidth * 0.47,
+                child: const SingleChildScrollView(
+                  child: NoteWidget(), // NoteWidget이 스크롤 가능하게 변경됨
+                ),
               ),
               Container(
                 width: screenWidth * 0.47,
