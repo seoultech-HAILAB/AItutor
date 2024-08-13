@@ -54,16 +54,16 @@ class _SelectTypePageState extends State<SelectTypePage> {
             Expanded(
               child: ListView.builder(
                   itemCount: _chatModels.length,
-              itemBuilder: (BuildContext context, int index) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 15, right: 15, bottom: 30),
-                child: typeWidget(_chatModels[index], screenWidth, isWeb),
-              );
-              }),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 30),
+                      child: typeWidget(_chatModels[index], screenWidth, isWeb),
+                    );
+                  }),
             ),
           ],
         )   // 모바일일 경우에 UI
-         :
+            :
         Padding(
           padding: const EdgeInsets.only(left: 60, right: 60, bottom: 30),
           child: GridView.builder(
@@ -102,8 +102,8 @@ class _SelectTypePageState extends State<SelectTypePage> {
               children: [
                 chatModel.img == null ? Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12)
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12)
                   ),
                   width: 50,
                   height: 50,
@@ -186,14 +186,18 @@ class _SelectTypePageState extends State<SelectTypePage> {
                       color: _colorsModel.wh,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-                    child: Center(
-                      child: Text("대화 시작", style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),),
-                    ),),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
+                      child: Center(
+                        child: Text(
+                          _getButtonText(chatModel.type),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -237,6 +241,19 @@ class _SelectTypePageState extends State<SelectTypePage> {
         ),
       ),
     );
+  }
+
+  String _getButtonText(String type) {
+    switch (type) {
+      case "argument":
+        return "글쓰기 시작하기";
+      case "debate":
+        return "독서토론 시작하기";
+      case "stress":
+        return "상담 시작하기";
+      default:
+        return "대화 시작";
+    }
   }
 
   Future<void> typesInit() async {
