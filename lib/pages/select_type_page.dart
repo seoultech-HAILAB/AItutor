@@ -189,7 +189,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
                     child: const Padding(
                     padding: EdgeInsets.only(top: 10, bottom: 10),
                     child: Center(
-                      child: Text("Start Chat", style: TextStyle(
+                      child: Text("대화 시작", style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),),
@@ -224,7 +224,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
                     child: const Padding(
                       padding: EdgeInsets.only(top: 10, bottom: 10),
                       child: Center(
-                        child: Text("View Evaluation History", style: TextStyle(
+                        child: Text("평가 기록 보기", style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),),
