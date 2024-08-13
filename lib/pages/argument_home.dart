@@ -56,7 +56,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
             typeWidget(screenWidth, isWeb),
             const SizedBox(height: 30,),
             Expanded(
-              child: ListView.builder(
+              child: ListView.builder( // 
                   itemCount: _docs.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
@@ -76,32 +76,17 @@ class _ArgumentHomeState extends State<ArgumentHome> {
               const SizedBox(height: 30,),
               Expanded(
                 child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // 1 개의 행에 보여줄 item 개수
-                    childAspectRatio: 3 / 1, // item 의 가로, 세로의 비율
-                    mainAxisSpacing: 30, // 수직 Padding
-                    crossAxisSpacing: 100, // 수평 Padding
-                  ),
-                  itemCount: _docs.length + 1, // Adjust the count for the dummy box
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == _docs.length) {
-                      // Return the dummy box when reaching the extra index
-                      return docWidget(
-                        DocsModel(
-                          iconNm: "중",  // Same icon
-                          title: "트롤리 딜레마",  // Change to the desired title
-                          explain: "\"선로를 돌려야 한다\" vs \"선로를 돌리면 안된다\" 를 주제로한 글쓰기를 도와줍니다",  // Description for dummy box
-                        ),
-                        screenWidth,
-                        isWeb,
-                        disableClick: true,  // Disable click for the dummy box
-                      );
-                    } else {
-                      // Original docWidget
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount( 
+                      crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
+                      childAspectRatio: 3 / 1, //item 의 가로, 세로의 비율
+                      mainAxisSpacing: 30, //수직 Padding
+                      crossAxisSpacing: 100, //수평 Padding
+                    ),
+                    itemCount: _docs.length,
+                    itemBuilder: (BuildContext context, int index) {
+
                       return docWidget(_docs[index], screenWidth, isWeb);
-                    }
-                  },
-                ),
+                    }),
               ),
             ],
           ),
@@ -131,31 +116,34 @@ class _ArgumentHomeState extends State<ArgumentHome> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),  // 둥근 사각형을 위해 모서리 반경 설정
-                  child: chatModel.img == null
-                      ? Container(
-                    width: 50,
-                    height: 50,
-                    child: Image.asset(
-                      "assets/icons/argument.png",
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                      : Image.network(
-                    chatModel.img,
-                    key: ValueKey(chatModel.img),
-                    fit: BoxFit.cover,
+                chatModel.img == null ? Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12)
+                  ),
+                  width: 50,
+                  height: 50,
+                  child: Image.asset("assets/icons/img.png", fit: BoxFit.cover,),
+                ) :
+                ClipRRect( 
+                  borderRadius: const BorderRadius.all(Radius.circular(12)), // 곡률 설정
+                  child: Image.network(
+                    chatModel.img,  // 이미지 링크 url
+                    key: ValueKey(chatModel.img), // 각 위젯의 고유키 설정
+                    fit: BoxFit.cover,  // 비율 유지 꽉 채움
                     height: 50,
                     width: 50,
                     errorBuilder: (context, error, stackTrace) {
+                      print('img error ${error}');
+                      // 오류났을 경우의 위젯, 기본 사진으로 설정
                       return Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12)
+                        ),
                         width: 50,
                         height: 50,
-                        child: Image.asset(
-                          "assets/icons/argument.png",
-                          fit: BoxFit.cover,
-                        ),
+                        child: Image.asset("assets/icons/user.png", fit: BoxFit.cover,),
                       );
                     },
                   ),
@@ -165,14 +153,14 @@ class _ArgumentHomeState extends State<ArgumentHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("${chatModel.key ?? ''}", style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 17,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),),
                     Text("${_linkedTimeMap[chatModel.key] ?? "${chatModel.key}와 대화해보세요!"}", style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 13,
                       color: _colorsModel.gr2,
-                    ),textAlign: TextAlign.center,),
+                    ),textAlign: TextAlign.left,),
                   ],
                 ),
                 const Spacer(),
@@ -180,7 +168,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
             ),
             const SizedBox(height: 10,),
             Text("${chatModel.explain ?? ''}", style: TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               color: _colorsModel.gr2,
             ),textAlign: TextAlign.left,),
             !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
@@ -190,72 +178,91 @@ class _ArgumentHomeState extends State<ArgumentHome> {
     );
   }
 
+  Widget docWidget(DocsModel docsModel, double screenWidth, bool isWeb) {
+    Color _iconColor;
 
-  Widget docWidget(DocsModel docsModel, screenWidth, bool isWeb, {bool disableClick = false}) {
-    Color _iconColor = _colorsModel.lightGreen;
-
-    if (docsModel.iconNm == "상") {
-      _iconColor = _colorsModel.lightPink;
-    } else if (docsModel.iconNm == "중") {
-      _iconColor = _colorsModel.lightGreen;
-    } else if (docsModel.iconNm == "하") {
-      _iconColor = _colorsModel.lightYellow;
+    switch (docsModel.iconNm) {
+      case "상":
+        _iconColor = _colorsModel.lightPink;
+        break;
+      case "중":
+        _iconColor = _colorsModel.lightGreen;
+        break;
+      case "하":
+        _iconColor = _colorsModel.lightYellow;
+        break;
+      default:
+        _iconColor = _colorsModel.lightGreen;
     }
 
+    Widget content = Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: _iconColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                width: 50,
+                height: 50,
+                child: Center(
+                  child: Text(
+                    docsModel.iconNm ?? '',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                docsModel.title ?? '',
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            docsModel.explain ?? '',
+            style: TextStyle(
+              fontSize: 16,
+              color: _colorsModel.gr2,
+            ),
+            textAlign: TextAlign.left,
+          ),
+          !isWeb ? const SizedBox(height: 20) : const Spacer(),
+        ],
+      ),
+    );
+
     return GestureDetector(
-      onTap: disableClick ? null : () {
-        _pageProvider.updateSelectDocsModel(docsModel);
-        _pageProvider.updateIsNoteApp(false);
-        _pageProvider.updatePage(1);
-      },
+      onTap: docsModel.key == "AI LAW"
+          ? () {
+              _pageProvider.updateSelectDocsModel(docsModel);
+              _pageProvider.updateIsNoteApp(false);
+              _pageProvider.updatePage(1);
+            }
+          : null,
       child: MouseRegion(
-        cursor: disableClick ? SystemMouseCursors.basic : SystemMouseCursors.click,
+        cursor: SystemMouseCursors.click,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: _colorsModel.wh,
             border: Border.all(color: _colorsModel.bl),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          color: _iconColor,
-                          borderRadius: BorderRadius.circular(12)
-                      ),
-                      width: 50,
-                      height: 50,
-                      child: Center(
-                        child: Text("${docsModel.iconNm}", style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),),
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    Text("${docsModel.title ?? ''}", style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Text("${docsModel.explain ?? ''}", style: TextStyle(
-                  fontSize: 18,
-                  color: _colorsModel.gr2,
-                ),textAlign: TextAlign.left,),
-                !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
-              ],
-            ),
-          ),
+          child: content,
         ),
       ),
     );
