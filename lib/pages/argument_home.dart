@@ -131,34 +131,31 @@ class _ArgumentHomeState extends State<ArgumentHome> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                chatModel.img == null ? Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12)
-                  ),
-                  width: 50,
-                  height: 50,
-                  child: Image.asset("assets/icons/img.png", fit: BoxFit.cover,),
-                ) :
                 ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)), // 곡률 설정
-                  child: Image.network(
-                    chatModel.img,  // 이미지 링크 url
-                    key: ValueKey(chatModel.img), // 각 위젯의 고유키 설정
-                    fit: BoxFit.cover,  // 비율 유지 꽉 채움
+                  borderRadius: BorderRadius.circular(12),  // 둥근 사각형을 위해 모서리 반경 설정
+                  child: chatModel.img == null
+                      ? Container(
+                    width: 50,
+                    height: 50,
+                    child: Image.asset(
+                      "assets/icons/argument.png",
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                      : Image.network(
+                    chatModel.img,
+                    key: ValueKey(chatModel.img),
+                    fit: BoxFit.cover,
                     height: 50,
                     width: 50,
                     errorBuilder: (context, error, stackTrace) {
-                      print('img error ${error}');
-                      // 오류났을 경우의 위젯, 기본 사진으로 설정
                       return Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12)
-                        ),
                         width: 50,
                         height: 50,
-                        child: Image.asset("assets/icons/user.png", fit: BoxFit.cover,),
+                        child: Image.asset(
+                          "assets/icons/argument.png",
+                          fit: BoxFit.cover,
+                        ),
                       );
                     },
                   ),
@@ -192,6 +189,7 @@ class _ArgumentHomeState extends State<ArgumentHome> {
       ),
     );
   }
+
 
   Widget docWidget(DocsModel docsModel, screenWidth, bool isWeb, {bool disableClick = false}) {
     Color _iconColor = _colorsModel.lightGreen;
