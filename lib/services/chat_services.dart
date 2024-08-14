@@ -203,9 +203,9 @@ class ChatServices {
       List<Map<String, dynamic>> messages = [];
 
       if (chatType == 'stress') {
-        messages = await loadChatMessages(chatModelKey: chatModelKey, uid: uid);
+        messages = await loadTodayChatMessages(chatModelKey: chatModelKey, uid: uid);
       } else {
-        messages = await loadChatMessages(chatModelKey: chatModelKey, uid: uid);
+        messages = await loadTodayChatMessages(chatModelKey: chatModelKey, uid: uid);
       }
 
       // 대화 로그를 하나의 텍스트로 합치기
