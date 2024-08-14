@@ -81,15 +81,37 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
   }
 
   Widget evaluateWidget(double screenWidth, bool isWeb, List<DebateResult> evaluationResults) {
-    // 각 evaluationResult의 width와 height를 계산하기 위해 가장 긴 details의 height를 찾음
-    double maxHeight = evaluationResults.map((result) {
+    // 각 evaluationResult의 explain 부분을 기준으로 가장 큰 높이를 계산
+    double maxExplainHeight = evaluationResults.map((result) {
       final textPainter = TextPainter(
-        text: TextSpan(text: result.details, style: const TextStyle(fontSize: 16)),
-        textDirection: ui.TextDirection.ltr, // 수정된 부분
+        text: TextSpan(text: ": ${result.explain}", style: const TextStyle(fontSize: 16)),
+        textDirection: ui.TextDirection.ltr,
+        maxLines: null,
+      );
+      textPainter.layout(maxWidth: screenWidth - 120); // padding 고려
+
+      return textPainter.height;
+    }).reduce((curr, next) => curr > next ? curr : next);
+
+    // 전체 텍스트를 고려하여 가장 큰 높이를 계산
+    double maxHeight = evaluationResults.map((result) {
+      final combinedText = [
+        result.detail,
+        result.interaction1,
+        result.reason1,
+        result.interaction2,
+        result.reason2
+      ].join("\n");
+
+      final textPainter = TextPainter(
+        text: TextSpan(text: combinedText, style: const TextStyle(fontSize: 16)),
+        textDirection: ui.TextDirection.ltr,
         maxLines: null,
       );
       textPainter.layout(maxWidth: (screenWidth - 120) / evaluationResults.length - 30); // padding 고려
-      return textPainter.height + 90; // 카테고리, 평가 텍스트와 상자의 기본 padding을 고려한 높이
+
+      // 설명 텍스트와 상자의 기본 padding을 고려한 높이
+      return textPainter.height + maxExplainHeight + 160; // 추가 여백 포함
     }).reduce((curr, next) => curr > next ? curr : next);
 
     return Padding(
@@ -108,11 +130,26 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
             evaluationColor = _colorsModel.red;
           }
 
+          // Interaction 번호 처리
+          String interaction1 = evaluationResult.interaction1;
+          if (interaction1.startsWith("1.")) {
+            interaction1 = interaction1.substring(2).trim();
+          } else {
+            interaction1 = "1. $interaction1";
+          }
+
+          String interaction2 = evaluationResult.interaction2;
+          if (interaction2.startsWith("2.")) {
+            interaction2 = interaction2.substring(2).trim();
+          } else {
+            interaction2 = "2. $interaction2";
+          }
+
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.only(right: 10), // 각 박스 간의 간격 조정
               child: Container(
-                height: maxHeight + 120, // 모든 항목의 높이를 가장 긴 항목에 맞춤
+                height: maxHeight + 100, // 모든 항목의 높이를 동일하게 설정
                 decoration: BoxDecoration(
                   color: _colorsModel.gr4,
                   boxShadow: [
@@ -129,19 +166,32 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Category (center aligned)
+                      // Category (center aligned, larger font)
                       Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "• ${evaluationResult.category}",
+                          "${evaluationResult.category}",
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 20, // 글씨 크기를 키움
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       const SizedBox(height: 10,),
+                      // Explain (left aligned, starts with ":")
+                      Container(
+                        height: maxExplainHeight + 40, // 최대 explain 높이를 설정하여 높이를 통일
+                        child: Text(
+                          ": ${evaluationResult.explain}",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                          maxLines: null,
+                        ),
+                      ),
+                      const SizedBox(height: 10,), // Explain 밑에 간격 추가
                       // Evaluation (center aligned)
                       Align(
                         alignment: Alignment.center,
@@ -156,23 +206,72 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                       ),
                       const SizedBox(height: 20,),
                       // Details (left aligned in a white box)
-                      Container(
-                        width: double.infinity,
-                        height: maxHeight,
-                        padding: const EdgeInsets.all(10),
-                        color: Colors.white,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${evaluationResult.details}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
+                      Expanded( // 이 부분을 추가하여 흰색 박스가 남은 공간을 채우도록 수정
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          color: Colors.white,
+                          child: SingleChildScrollView( // 스크롤 가능하도록 수정
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Title '[평가 근거]'
+                                const Text(
+                                  "[평가 근거]",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 10,), // 한줄 띄움
+                                // Detail
+                                Text(
+                                  "${evaluationResult.detail}",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 10,), // 한줄 띄움
+                                // Interaction 1
+                                Text(
+                                  interaction1,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                // Reason 1 with right arrow
+                                Text(
+                                  "→ ${evaluationResult.reason1}",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10,), // 한줄 띄움
+                                // Interaction 2
+                                Text(
+                                  interaction2,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                // Reason 2 with right arrow
+                                Text(
+                                  "→ ${evaluationResult.reason2}",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 20,), // 여백 추가
-                          ],
+                          ),
                         ),
                       ),
                     ],
@@ -185,6 +284,12 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
       ),
     );
   }
+
+
+
+
+
+
 
 
   Widget selectDateWidget(screenWidth, isWeb) {
