@@ -1,13 +1,13 @@
 class DebateResult {
-  var category;  // String
-  var reason1;   // String
-  var reason2;   // String
-  var evaluation;  // String
-  var detail;    // String
-  var interaction1;  // String
-  var interaction2;  // String
-  var explain;   // String
-  var isSuccess;  // 평가가 이뤄졌는지 여부
+  String? category;
+  String? reason1;
+  String? reason2;
+  String? evaluation;
+  String? detail;
+  String? interaction1;
+  String? interaction2;
+  String? explain;
+  bool? isSuccess;
 
   DebateResult({
     this.category,
@@ -20,6 +20,21 @@ class DebateResult {
     this.explain,
     this.isSuccess,
   });
+
+  // Add this factory constructor
+  factory DebateResult.fromJson(Map<String, dynamic> json) {
+    return DebateResult(
+      category: json['category'] as String?,
+      reason1: json['reason1'] as String?,
+      reason2: json['reason2'] as String?,
+      evaluation: json['evaluation'] as String?,
+      detail: json['detail'] as String?,
+      interaction1: json['interaction1'] as String?,
+      interaction2: json['interaction2'] as String?,
+      explain: json['explain'] as String?,
+      isSuccess: json['isSuccess'] as bool?,
+    );
+  }
 
   List returnModels(String content) {
     try {
@@ -75,3 +90,4 @@ class DebateResult {
     }
   }
 }
+

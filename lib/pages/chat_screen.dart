@@ -84,14 +84,14 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: screenWidth * 0.019),
+            padding: EdgeInsets.only(left: screenWidth * 0.015),
             child: Row(
               children: [
                 Container(
-                  width: screenWidth * 0.25,
+                  width: screenWidth * 0.972,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: _colorsModel.wh,
@@ -100,8 +100,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(5),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,14 +111,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                 color: _iconColor,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              width: 40,
-                              height: 40,
+                              width: 45,
+                              height: 45,
                               child: Center(
                                 child: SelectableText(
                                   "${docsModel.iconNm}",
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cafe24Oneprettynight'
                                   ),
                                 ),
                               ),
@@ -127,9 +128,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             SelectableText(
                               "${docsModel.title ?? ''}",
                               style: const TextStyle(
-                                fontSize: 17,
+                                fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
+                                fontFamily: 'Cafe24Oneprettynight'
                               ),
                             ),
                           ],
@@ -138,30 +140,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                 ),
-                SizedBox(width: screenWidth * 0.02), // Space between the boxes
-                Container(
-                  width: screenWidth * 0.5,  // 좌우로 더 길게 설정
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: _colorsModel.wh,
-                    border: Border.all(color: _colorsModel.bl),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(10), // 패딩은 원래대로 유지
-                    child: Text(
-                      "주제: “엄격한 규제를 통한 안전한 AI 산업 육성” vs “탄력적 규제를 통한 혁신적 AI 산업 육성”",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -209,6 +191,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                 onSubmitted: (_) {
                                   _sendMessage();
                                 },
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
                                 decoration: InputDecoration(
                                   suffixIcon: Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -226,10 +212,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                       ),
                                     ),
                                   ),
-                                  hintText: 'Type a message',
+                                  hintText: '메시지를 입력해주세요',
+                                  hintStyle: const TextStyle(
+                                    fontSize: 20,
+                                    fontFamily: 'Cafe24Oneprettynight',
+                                  ),
                                   fillColor: Colors.white,
                                   filled: true,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                                   border: InputBorder.none,
                                   disabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
@@ -313,6 +303,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       onSubmitted: (_) {
                         _sendMessage();
                       },
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Cafe24Oneprettynight',
+                      ),
                       decoration: InputDecoration(
                         suffixIcon: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -330,7 +324,11 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           ),
                         ),
-                        hintText: 'Type a message',
+                        hintText: '메시지를 입력해주세요',
+                        hintStyle: const TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'Cafe24Oneprettynight',
+                        ),
                         fillColor: Colors.white,
                         filled: true,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -502,7 +500,7 @@ List<TextSpan> _getMessageTextSpans(String message) {
 
     spans.add(TextSpan(
       text: match.group(0),
-      style: TextStyle(color: Colors.blue),
+      style: TextStyle(color: Colors.blue, fontFamily: 'Cafe24Oneprettynight'),
       recognizer: TapGestureRecognizer()
         ..onTap = () {
           _launchURL(match.group(0)!);
@@ -532,10 +530,10 @@ List<TextSpan> _getMessageTextSpans(String message) {
         imagePath = "assets/icons/debate.png";
         break;
       case "stress":
-        imagePath = "assets/icons/counsel.png";
+        imagePath = "assets/icons/stress.png";
         break;
       default:
-        imagePath = "assets/icons/default.png"; // 기본 이미지 경로 설정
+        imagePath = "assets/icons/stress.png"; // 기본 이미지 경로 설정
     }
 
     return Align(
@@ -566,7 +564,7 @@ List<TextSpan> _getMessageTextSpans(String message) {
                 SelectableText.rich(
                   TextSpan(
                     children: _getMessageTextSpans(message['content'] ?? ""),
-                    style: const TextStyle(color: Colors.black, fontSize: 16),
+                    style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Cafe24Oneprettynight'),
                   ),
                 ),
               ],
@@ -624,9 +622,9 @@ List<TextSpan> _getMessageTextSpans(String message) {
     if (_pageProvider.selectChatModel.type == 'stress') {
       initialMessage = '안녕 만나서 반가워! 나는 연우라고 해. 너는 이름이 뭐야?';
     } else if (_pageProvider.selectChatModel.type == 'debate') {
-      initialMessage = '안녕! 나는 오늘 너와 함께 토론을 진행할 토론 파트너야. 만나서 반가워.';
+      initialMessage = '안녕! 나는 오늘 너와 함께 토론을 진행할 AI 튜터야. 만나서 반가워.';
     } else {
-      initialMessage = '안녕하세요! 저는 글쓰기를 지원하는 파트너입니다. 만나서 반갑습니다. \n\n'
+      initialMessage = '안녕하세요! 저는 글쓰기 도와주는 AI 튜터입니다. 저와 함께 대화하며 왼쪽 글쓰기 칸을 채워나가 봅시다! \n\n'
                        '아래는 국내 인공지능 법률 초기 입법에 대한 읽기자료입니다. 읽기자료를 모두 읽은 후 대화를 시작해주세요. \n\n'
                        '링크: https://drive.google.com/file/d/1WL6aUt39ZZCT5hACFs9vvtvI3oGESw6W/view?usp=drive_link';
     }

@@ -99,7 +99,7 @@ class _RegistUserPageState extends State<RegistUserPage> {
                         color: _colorsModel.bl,))),
             ),
             title: Text('회원가입', style: TextStyle(fontSize: 16,
-                color: _colorsModel.bl),),
+                color: _colorsModel.bl, fontFamily: 'Cafe24Oneprettynight'),),
             leadingWidth: 40,
             centerTitle: true,
           ),
@@ -113,35 +113,40 @@ class _RegistUserPageState extends State<RegistUserPage> {
                       children: [
                         const SizedBox(height: 10,),
                         Text('이름', style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 25,
                           color: _colorsModel.gr1,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),),
                         const SizedBox(height: 10,),
                         textFieldWidget(_nmController, '이름 입력해주세요.'),
                         const SizedBox(height: 10,),
                         Text('학과명', style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 20,
                           color: _colorsModel.gr1,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),),
                         const SizedBox(height: 10,),
                         textFieldWidget(_departmentNmController, '학과명을 입력해주세요.'),
                         const SizedBox(height: 10,),
                         Text('이메일', style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 20,
                           color: _colorsModel.gr1,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),),
                         const SizedBox(height: 10,),
                         textFieldWidget(_emailController, '이메일을 입력해주세요.'),
                         const SizedBox(height: 10,),
                         Text('비밀번호', style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 20,
                           color: _colorsModel.gr1,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),),
                         const SizedBox(height: 10,),
                         textFieldWidget(_passwordController, '비밀번호를 입력해주세요.'),
                         Text('비밀번호 확인', style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 20,
                           color: _colorsModel.gr1,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),),
                         const SizedBox(height: 10,),
                         textFieldWidget(_passwordConfirmController, '비밀번호를 다시 입력해주세요.'),
@@ -191,8 +196,8 @@ class _RegistUserPageState extends State<RegistUserPage> {
                               child: Text(
                                 '가입하기',
                                 style: TextStyle(
-                                  fontSize: 24,
-                                  color: isAllPass ? _colorsModel.wh : _colorsModel.main,
+                                  fontSize: 25,
+                                  color: isAllPass ? _colorsModel.wh : _colorsModel.main, fontFamily: 'Cafe24Oneprettynight'
                                 ),
                               ),
                             ),
@@ -274,6 +279,7 @@ class _RegistUserPageState extends State<RegistUserPage> {
         style: TextStyle(
           color: _colorsModel.bl,
           fontSize: 16,
+          fontFamily: 'Cafe24Oneprettynight'
         ),
         decoration: InputDecoration(
           counterText: '',
@@ -282,8 +288,8 @@ class _RegistUserPageState extends State<RegistUserPage> {
           fillColor: Colors.transparent,
           hintText: hintText,
           helperText: _isRed ? _helperText  : '',
-          hintStyle: TextStyle(fontSize: 16, color: _colorsModel.gr2),
-          helperStyle: TextStyle(fontSize: 11, color: _isRed ? _colorsModel.red : _colorsModel.gr2),
+          hintStyle: TextStyle(fontSize: 16, color: _colorsModel.gr2, fontFamily: 'Cafe24Oneprettynight'),
+          helperStyle: TextStyle(fontSize: 11, color: _isRed ? _colorsModel.red : _colorsModel.gr2, fontFamily: 'Cafe24Oneprettynight'),
           border: InputBorder.none,
           label: _isRed ? SizedBox(
             width: 24,
@@ -376,6 +382,7 @@ class _RegistUserPageState extends State<RegistUserPage> {
           style: TextStyle(
             color: _colorsModel.bl,
             fontSize: 16,
+            fontFamily: 'Cafe24Oneprettynight'
           ),
           decoration: InputDecoration(
             helperText: _isRed ? _helperText : '',
@@ -384,8 +391,8 @@ class _RegistUserPageState extends State<RegistUserPage> {
             filled: true,
             fillColor: Colors.transparent,
             hintText: hintText,
-            hintStyle: TextStyle(fontSize: 16, color: _colorsModel.gr2),
-            helperStyle: TextStyle(fontSize: 11, color: _isRed ? _colorsModel.red : _colorsModel.gr2),
+            hintStyle: TextStyle(fontSize: 16, color: _colorsModel.gr2, fontFamily: 'Cafe24Oneprettynight'),
+            helperStyle: TextStyle(fontSize: 11, color: _isRed ? _colorsModel.red : _colorsModel.gr2, fontFamily: 'Cafe24Oneprettynight'),
             border: InputBorder.none,
             label: _isRed ? SizedBox(
               width: 24,

@@ -68,8 +68,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               padding: const EdgeInsets.only(right: 15.0),
               child: Text('Home', style: TextStyle(
                 color: _colorsModel.bl,
-                fontSize: 20,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               ),),
             ),
             onTap: () async {
@@ -82,8 +83,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               padding: const EdgeInsets.only(right: 15.0),
               child: Text('HAI Lab', style: TextStyle(
                 color: _colorsModel.bl,
-                fontSize: 20,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               ),),
             ),
             onTap: () {
@@ -96,8 +98,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               padding: const EdgeInsets.only(right: 15.0),
               child: Text('Credit', style: TextStyle(
                 color: _colorsModel.bl,
-                fontSize: 20,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               ),),
             ),
             onTap: () {
@@ -109,8 +112,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               padding: const EdgeInsets.only(right: 15.0),
               child: Text('로그아웃', style: TextStyle(
                 color: _colorsModel.bl,
-                fontSize: 20,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               ),),
             ),
             onTap: () async {
@@ -131,6 +135,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 color: _colorsModel.bl,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               ),),
             ),
             onTap: () {

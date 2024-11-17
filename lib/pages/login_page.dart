@@ -80,14 +80,16 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   SizedBox(height: 30,),
                   Text('아이디', style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 25,
                     color: _colorsModel.gr1,
+                    fontFamily: 'Cafe24Oneprettynight',
                   ),),
                   const SizedBox(height: 10,),
                   textFieldWidget(_emailController, '아이디를 입력해주세요.',),
                   Text('비밀번호', style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 25,
                     color: _colorsModel.gr1,
+                    fontFamily: 'Cafe24Oneprettynight',
                   ),),
                   const SizedBox(height: 10,),
                   textFieldWidget(_passwordController, '비밀번호를 입력해주세요.',),
@@ -127,7 +129,8 @@ class _LoginPageState extends State<LoginPage> {
                         child: Center(
                           child: Text('로그인', style: TextStyle(
                             color: _colorsModel.wh,
-                            fontSize: 16,
+                            fontSize: 25,
+                            fontFamily: 'Cafe24Oneprettynight',
                           ),),
                         ),
                       ),
@@ -151,14 +154,16 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('계정이 없으신가요?', style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 20,
                           color: _colorsModel.gr2,
+                          fontFamily: 'Cafe24Oneprettynight',
                         ),),
                         const SizedBox(width: 8,),
                         Text('회원가입', style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 20,
                             color: _colorsModel.main,
-                            fontWeight: FontWeight.w600
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Cafe24Oneprettynight',
                         ),),
                       ],
                     ),
@@ -251,6 +256,7 @@ class _LoginPageState extends State<LoginPage> {
           style: TextStyle(
             color: _colorsModel.bl,
             fontSize: 16,
+            fontFamily: 'Cafe24Oneprettynight',
           ),
           decoration: InputDecoration(
             helperText: _isRed ? _helperText : '',
@@ -264,10 +270,10 @@ class _LoginPageState extends State<LoginPage> {
             filled: true,
             fillColor: Colors.transparent,
             hintText: hintText,
-            hintStyle: TextStyle(fontSize: 16, color: _colorsModel.gr2),
+            hintStyle: TextStyle(fontSize: 16, color: _colorsModel.gr2, fontFamily: 'Cafe24Oneprettynight',),
             helperStyle: TextStyle(
                 fontSize: 11,
-                color: _isRed ? _colorsModel.red : _colorsModel.gr2),
+                color: _isRed ? _colorsModel.red : _colorsModel.gr2, fontFamily: 'Cafe24Oneprettynight',),
             border: InputBorder.none,
             disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(

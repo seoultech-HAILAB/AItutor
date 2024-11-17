@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  syncfusion_flutter_charts: ^24.1.4  # Use the latest compatible version
+  
+  tuple: ^2.0.2
 
   url_launcher: ^6.3.0
 
@@ -54,6 +57,13 @@ flutter:
     - assets/icons/
     - assets/docs/
     - assets/stressIcons/
+
+  fonts:
+    - family: Cafe24Oneprettynight
+      fonts:
+        - asset: build\web\assets\fonts\Cafe24Oneprettynight.woff
+
+  
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
