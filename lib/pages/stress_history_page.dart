@@ -122,14 +122,15 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
           Container(
             width: screenWidth,
             decoration: BoxDecoration(
-              color: _colorsModel.userTextBox,
+              color: const Color(0xFF0F1E5E), // 변경된 색상
             ),
             child: const Padding(
               padding: EdgeInsets.only(top: 10, bottom: 10),
               child: Center(
                 child: Text("지난 결과 조회하기", style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                   fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
@@ -140,6 +141,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
             title: const ChartTitle(
                 text: '학업 스트레스 변화 추이',
                 textStyle: TextStyle(
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Cafe24Oneprettynight'
                 )),
@@ -147,37 +149,37 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
               majorGridLines: MajorGridLines(width: 0),
               labelAlignment: LabelAlignment.center,  // 레이블을 중앙에 정렬
               title: AxisTitle(text: '날짜', textStyle: TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Cafe24Oneprettynight'
               )),
             ),
             primaryYAxis: NumericAxis(
               title: const AxisTitle(text: '스트레스 수준', textStyle: TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Cafe24Oneprettynight'
               )),
               majorGridLines: const MajorGridLines(width: 0),
               minimum: 0,
-              maximum: 6,
-              interval: 1,
+              maximum: 5,
+              interval: 1, // 자동 간격 설정
               axisLabelFormatter: (AxisLabelRenderDetails details) {
                 switch (details.value.toInt()) {
                   case 0:
                     return ChartAxisLabel('', const TextStyle(color: Colors.transparent, fontFamily: 'Cafe24Oneprettynight'));  // 0에 대한 처리 (투명 라벨)
                   case 1:
-                    return ChartAxisLabel('매우 낮음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
-                  case 2:
                     return ChartAxisLabel('낮음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
-                  case 3:
+                  case 2:
                     return ChartAxisLabel('중간', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
-                  case 4:
+                  case 3:
                     return ChartAxisLabel('높음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
-                  case 5:
+                  case 4:
                     return ChartAxisLabel('매우 높음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
-                  case 6:
+                  case 5:
                     return ChartAxisLabel('', const TextStyle(color: Colors.transparent, fontFamily: 'Cafe24Oneprettynight'));  // 6에 대한 처리 (투명 라벨)
                   default:
-                    return ChartAxisLabel('', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
+                    return ChartAxisLabel('', const TextStyle(color: Colors.transparent, fontFamily: 'Cafe24Oneprettynight'));
                 }
               },
             ),
@@ -186,6 +188,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                 dataSource: _chartData,
                 xValueMapper: (ChartData data, _) => data.date,
                 yValueMapper: (ChartData data, _) => data.stressLevel,
+                color: const Color(0xFF0F1E5E),
                 dataLabelSettings: const DataLabelSettings(isVisible: false),
               ),
             ],
@@ -195,11 +198,16 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
           _selectResult.scores == null ? Container() : Column(
             children: [
               const SizedBox(height: 20,),
-              Text("${_selectTime?.month}월 ${_selectTime?.day}일 ${_userModel.nm ?? ""}님의 학업 스트레스는 ...", style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Cafe24Oneprettynight'
-              ),),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("   ${_selectTime?.month}월 ${_selectTime?.day}일 ${_userModel.nm ?? ""}님의 학업 스트레스는 ...", 
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
+                ),),
+              ),
               const SizedBox(height: 15,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -236,47 +244,68 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         text: TextSpan(
                             children: [
                               TextSpan(text: '${_selectResult.averageStressDescription} 정도',
-                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: averageColor, fontFamily: 'Cafe24Oneprettynight'),),
-                              const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Cafe24Oneprettynight')),
+                                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: averageColor, fontFamily: 'Cafe24Oneprettynight'),),
+                              const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, fontFamily: 'Cafe24Oneprettynight')),
                             ])
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20,),
-              Row(  // 수정된 부분: 가로 배열
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: causeWidget(
-                      detail: groupDetails['스트레스 원인'],
-                      isWeb: isWeb,
-                      screenWidth: screenWidth,
-                      screenHeight: screenHeight,
-                      isHistory: true,
+              const SizedBox(height: 20),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: causeWidget(
+                          detail: groupDetails['스트레스 원인'],
+                          isWeb: isWeb,
+                          screenWidth: screenWidth,
+                          screenHeight: screenHeight,
+                          isHistory: true,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: symptomWidget(
-                      detail: groupDetails['스트레스 증상'],
-                      isWeb: isWeb,
-                      screenWidth: screenWidth,
-                      screenHeight: screenHeight,
-                      isHistory: true,
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: symptomWidget(
+                          detail: groupDetails['스트레스 증상'],
+                          isWeb: isWeb,
+                          screenWidth: screenWidth,
+                          screenHeight: screenHeight,
+                          isHistory: true,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: solutionWidget(
-                      detail: groupDetails['대처 방안'],
-                      isWeb: isWeb,
-                      screenWidth: screenWidth,
-                      screenHeight: screenHeight,
-                      isHistory: true,
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: solutionWidget(
+                          detail: groupDetails['대처 방안'],
+                          isWeb: isWeb,
+                          screenWidth: screenWidth,
+                          screenHeight: screenHeight,
+                          isHistory: true,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 60),
             ],),
@@ -315,22 +344,23 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
           Container(
             width: screenWidth,
             decoration: BoxDecoration(
-              color: _colorsModel.userTextBox,
+              color: const Color(0xFF0F1E5E), // 변경된 색상
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: Center(
                 child: Text("${_userModel.nm ?? ""}님의 학업 스트레스", style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                   fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ),
           ),
           const SizedBox(height: 20,),
-          Text("${_recentTime?.month}월 ${_recentTime?.day}일 ${_userModel.nm ?? ""}님의 학업 스트레스는 ...", style: const TextStyle(
-            fontSize: 20,
+          Text("   ${_recentTime?.month}월 ${_recentTime?.day}일 ${_userModel.nm ?? ""}님의 학업 스트레스는 ...", style: const TextStyle(
+            fontSize: 25,
             fontWeight: FontWeight.bold,
             fontFamily: 'Cafe24Oneprettynight'
           ),),
@@ -370,45 +400,68 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                     text: TextSpan(
                         children: [
                           TextSpan(text: '${_recentResult.averageStressDescription} 정도',
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: averageColor, fontFamily: 'Cafe24Oneprettynight'),),
-                          const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Cafe24Oneprettynight')),
+                            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: averageColor, fontFamily: 'Cafe24Oneprettynight'),),
+                          const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, fontFamily: 'Cafe24Oneprettynight')),
                         ])
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20,),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: causeWidget(
-                  detail: groupDetails['스트레스 원인'],
-                  isWeb: isWeb,
-                  screenWidth: screenWidth,
-                  screenHeight: screenHeight,
-                  isHistory: false,
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch, // 자식 위젯의 높이를 동일하게 맞춤
+              children: [
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10), // 간격 추가
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: causeWidget(
+                      detail: groupDetails['스트레스 원인'],
+                      isWeb: isWeb,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      isHistory: false,
+                    ),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: symptomWidget(
-                  detail: groupDetails['스트레스 증상'],
-                  isWeb: isWeb,
-                  screenWidth: screenWidth,
-                  screenHeight: screenHeight,
-                  isHistory: false,
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10), // 간격 추가
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: symptomWidget(
+                      detail: groupDetails['스트레스 증상'],
+                      isWeb: isWeb,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      isHistory: false,
+                    ),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: solutionWidget(
-                  detail: groupDetails['대처 방안'],
-                  isWeb: isWeb,
-                  screenWidth: screenWidth,
-                  screenHeight: screenHeight,
-                  isHistory: false,
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10), // 간격 추가
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: solutionWidget(
+                      detail: groupDetails['대처 방안'],
+                      isWeb: isWeb,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      isHistory: false,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 60),
         ],
@@ -419,362 +472,502 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
   Widget causeWidget({
     required String detail,
     required bool isWeb,
-    required screenWidth,
+    required double screenWidth,
     required bool isHistory,
-    required screenHeight,
+    required double screenHeight,
   }) {
+
     if (isHistory) {
-      return historyBodyWidget(screenWidth, screenHeight, '스트레스 원인', 'cause', detail);
+      return historyBodyWidget(
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+        title: '스트레스 원인',
+        category: 'cause',
+        detail: detail,
+      );
     } else {
       Map summary = _recentResult.summary['cause'] ?? {};
       Map feedback = _recentResult.feedback['cause'] ?? {};
       String key = summary.isEmpty ? "" : summary.keys.first;
       String imgPath = ConvertStressImg().getStressImg('cause', key);
 
-      return Padding(
-        padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: Container(
-          width: screenWidth * 0.2,
-          decoration: BoxDecoration(
-            color: _colorsModel.gr4,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-            child: Column(
-              children: [
-                const Text("스트레스 원인", style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cafe24Oneprettynight'
-                ),),
-                const SizedBox(height: 15,),
-                SizedBox(
-                  width: screenWidth * 0.2,
-                  height: 156,
-                  child: Image.asset(imgPath.isNotEmpty ? 'assets/stressIcons/' + imgPath : "assets/icons/board.png"),
-                ),
-                const SizedBox(height: 15,),
-                Container(
-                  width: screenWidth * 0.2,
-                  decoration: BoxDecoration(
-                    color: _colorsModel.titleBox,
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: screenWidth,
+            decoration: BoxDecoration(
+              color: _colorsModel.gr4, // 배경 회색
+              border: Border.all(
+                color: const Color(0xFF0F1E5E),
+                width: 4,
+              )
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 60, bottom: 10),
+              child: Column(
+                children: [
+                  const SizedBox(height: 30), // 상단 박스와 간격 유지
+                  SizedBox(
+                    width: screenWidth * 0.6,
+                    height: 156,
+                    child: Image.asset(imgPath.isNotEmpty ? 'assets/stressIcons/$imgPath' : "assets/icons/board.png"),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-                    child: Center(
-                      child: Text("$key", style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
+                  const SizedBox(height: 15),
+                  Container(
+                    width: screenWidth * 0.6,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC3CDF5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Center(
+                        child: Text(
+                          key,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Cafe24Oneprettynight',
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 15,),
-                summary.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<요약>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                feedback.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<상담 튜터의 한 마디>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  Widget historyBodyWidget(screenWidth, screenHeight, String title, String category, String detail) {
-    try {
-      Map summary = (_selectResult.summary ?? {})['$category'] ?? {};
-      Map feedback = (_selectResult.feedback ?? {})['$category'] ?? {};
-      String key = summary.isEmpty ? "" : summary.keys.first;
-      String defaultImg = "board";
-      String imgPath = ConvertStressImg().getStressImg('$category', key);
-
-      if (category == 'cause') {
-        defaultImg = "board";
-      } else if (category == 'symptom') {
-        defaultImg = "headache";
-      } else if (category == 'coping') {
-        defaultImg = "friends";
-      }
-
-      return Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: Container(
-          width: screenWidth * 0.2,
-          decoration: BoxDecoration(
-            color: _colorsModel.gr4,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 4,
-                offset: Offset(0, 1), // changes position of shadow
+                  const SizedBox(height: 15),
+                  summary.isEmpty
+                      ? Container()
+                      : Container(
+                          width: screenWidth * 0.6,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "[요약]",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "• ${summary[key] ?? ""}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                  const SizedBox(height: 10),
+                  feedback.isEmpty
+                      ? Container()
+                      : Container(
+                          width: screenWidth * 0.6,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "[상담 튜터의 한 마디]",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "• ${feedback[key] ?? ""}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                ],
               ),
-            ],
+            ),
+          ),
+          Positioned(
+            top: -5, // 박스를 배경 위로 이동
+            left: 0, // 좌측 마진
+            right: 0, // 우측 마진
+            child: Container(
+              width: screenWidth,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F1E5E), 
+                border: Border.all(color: const Color(0xFF0F1E5E), width: 4),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Center(
+                child: Text(
+                  "스트레스 원인",
+                  style: const TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Cafe24Oneprettynight',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  Widget historyBodyWidget({
+    required double screenWidth,
+    required double screenHeight,
+    required String title,
+    required String category,
+    required String detail,
+  }) {
+    Map summary = (_selectResult.summary ?? {})[category] ?? {};
+    Map feedback = (_selectResult.feedback ?? {})[category] ?? {};
+    String key = summary.isEmpty ? "" : summary.keys.first;
+    String imgPath = ConvertStressImg().getStressImg(category, key);
+    String defaultImg;
+
+    if (category == 'cause') {
+      defaultImg = "board";
+    } else if (category == 'symptom') {
+      defaultImg = "headache";
+    } else {
+      defaultImg = "friends";
+    }
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: screenWidth,
+          decoration: BoxDecoration(
+            color: _colorsModel.gr4,
+            border: Border.all(
+              color: const Color(0xFF0F1E5E),
+              width: 4,
+            ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+            padding: const EdgeInsets.only(left: 15, right: 15, top: 60, bottom: 10),
             child: Column(
               children: [
-                Text(title, style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cafe24Oneprettynight'
-                ),),
-                const SizedBox(height: 15,),
+                const SizedBox(height: 30),
                 SizedBox(
-                  width: screenWidth * 0.2,
+                  width: screenWidth * 0.6,
                   height: 156,
-                  child: Image.asset(imgPath.isNotEmpty ? 'assets/stressIcons/' + imgPath : "assets/icons/$defaultImg.png"),
+                  child: Image.asset(
+                    imgPath.isNotEmpty ? 'assets/stressIcons/$imgPath' : "assets/icons/$defaultImg.png",
+                  ),
                 ),
-                const SizedBox(height: 15,),
+                const SizedBox(height: 15),
                 Container(
-                  width: screenWidth * 0.2,
+                  width: screenWidth * 0.6,
                   decoration: BoxDecoration(
-                    color: _colorsModel.titleBox,
+                    color: const Color(0xFFC3CDF5),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Center(
-                      child: Text("$key", style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
+                      child: Text(
+                        key,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cafe24Oneprettynight',
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 15,),
-                summary.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<요약>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                feedback.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<상담 튜터의 한 마디>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: 15),
+                summary.isEmpty
+                    ? Container()
+                    : Container(
+                        width: screenWidth * 0.6,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "[요약]",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontFamily: 'Cafe24Oneprettynight',
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "• ${summary[key] ?? ""}",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontFamily: 'Cafe24Oneprettynight',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                const SizedBox(height: 10),
+                feedback.isEmpty
+                    ? Container()
+                    : Container(
+                        width: screenWidth * 0.6,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "[상담 튜터의 한 마디]",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontFamily: 'Cafe24Oneprettynight',
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "• ${feedback[key] ?? ""}",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontFamily: 'Cafe24Oneprettynight',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
               ],
             ),
           ),
         ),
-      );
-    } catch (e) {
-      print("error historyBodyWidget $e");
-      return Container();
-    }
+        Positioned(
+          top: -5,
+          left: 0,
+          right: 0,
+          child: Container(
+            width: screenWidth,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F1E5E),
+              border: Border.all(color: const Color(0xFF0F1E5E), width: 4),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 25,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
+
 
   Widget symptomWidget({
     required String detail,
     required bool isWeb,
-    required screenWidth,
+    required double screenWidth,
     required bool isHistory,
-    required screenHeight,
+    required double screenHeight,
   }) {
-
     if (isHistory) {
-      return historyBodyWidget(screenWidth,screenHeight, '스트레스 증상', 'symptom', detail);
+      return historyBodyWidget(
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+        title: '스트레스 증상',
+        category: 'symptom',
+        detail: detail,
+      );
     } else {
       Map summary = _recentResult.summary['symptom'] ?? {};
       Map feedback = _recentResult.feedback['symptom'] ?? {};
       String key = summary.isEmpty ? "" : summary.keys.first;
       String imgPath = ConvertStressImg().getStressImg('symptom', key);
 
-      return Padding(
-        padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: Container(
-          width: screenWidth * 0.2,
-          decoration: BoxDecoration(
-            color: _colorsModel.gr4,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 4,
-                offset: const Offset(0, 1), // changes position of shadow
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: screenWidth,
+            decoration: BoxDecoration(
+              color: _colorsModel.gr4,
+              border: Border.all(
+                color: const Color(0xFF0F1E5E),
+                width: 4,
               ),
-            ],
-          ),
-          child: Padding(
-            padding:  const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-            child: Column(
-              children: [
-                const Text("스트레스 증상", style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cafe24Oneprettynight'
-                ),),
-                const SizedBox(height: 15,),
-                SizedBox(
-                  width: screenWidth * 0.2,
-                  height: 156,
-                  child: Image.asset(imgPath.isNotEmpty ? 'assets/stressIcons/' + imgPath : "assets/icons/headache.png"),
-                ),
-                const SizedBox(height: 15,),
-                Container(
-                  width: screenWidth * 0.2,
-                  decoration: BoxDecoration(
-                    color: _colorsModel.titleBox,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-                    child: Center(
-                      child: Text("$key", style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 60, bottom: 10),
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: screenWidth * 0.6,
+                    height: 156,
+                    child: Image.asset(
+                      imgPath.isNotEmpty ? 'assets/stressIcons/$imgPath' : "assets/icons/headache.png",
                     ),
                   ),
-                ),
-                const SizedBox(height: 15,),
-                summary.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 15),
+                  Container(
+                    width: screenWidth * 0.6,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC3CDF5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Center(
+                        child: Text(
+                          key,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Cafe24Oneprettynight',
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<요약>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                feedback.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<상담 튜터의 한 마디>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 15),
+                  summary.isEmpty
+                      ? Container()
+                      : Container(
+                          width: screenWidth * 0.6,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "[요약]",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "• ${summary[key] ?? ""}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                  const SizedBox(height: 10),
+                  feedback.isEmpty
+                      ? Container()
+                      : Container(
+                          width: screenWidth * 0.6,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "[상담 튜터의 한 마디]",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "• ${feedback[key] ?? ""}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                ],
+              ),
             ),
           ),
-        ),
+          Positioned(
+            top: -5,
+            left: 0,
+            right: 0,
+            child: Container(
+              width: screenWidth,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F1E5E),
+                border: Border.all(color: const Color(0xFF0F1E5E), width: 4),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Center(
+                child: Text(
+                  "스트레스 증상",
+                  style: const TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Cafe24Oneprettynight',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       );
     }
   }
@@ -782,127 +975,171 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
   Widget solutionWidget({
     required String detail,
     required bool isWeb,
-    required screenWidth,
+    required double screenWidth,
     required bool isHistory,
-    required screenHeight,
+    required double screenHeight,
   }) {
-
-
-
     if (isHistory) {
-      return historyBodyWidget(screenWidth, screenHeight, '대처 방안', 'coping', detail);
+      return historyBodyWidget(
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+        title: '대처 방안',
+        category: 'coping',
+        detail: detail,
+      );
     } else {
       Map summary = _recentResult.summary['coping'] ?? {};
       Map feedback = _recentResult.feedback['coping'] ?? {};
       String key = summary.isEmpty ? "" : summary.keys.first;
       String imgPath = ConvertStressImg().getStressImg('coping', key);
 
-      return Padding(
-        padding: isWeb ? const EdgeInsets.only(left: 60, right: 60, bottom: 30) : const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: Container(
-          width: screenWidth * 0.2,
-          decoration: BoxDecoration(
-            color: _colorsModel.gr4,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 4,
-                offset: const Offset(0, 1), // changes position of shadow
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: screenWidth,
+            decoration: BoxDecoration(
+              color: _colorsModel.gr4,
+              border: Border.all(
+                color: const Color(0xFF0F1E5E),
+                width: 4,
               ),
-            ],
-          ),
-          child: Padding(
-            padding:  const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-            child: Column(
-              children: [
-                const Text("대처 방안", style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cafe24Oneprettynight'
-                ),),
-                const SizedBox(height: 15,),
-                SizedBox(
-                  width: screenWidth * 0.2,
-                  height: 156,
-                  child: Image.asset(imgPath.isNotEmpty ? 'assets/stressIcons/' + imgPath : "assets/icons/friends.png"),
-                ),
-                const SizedBox(height: 15,),
-                Container(
-                  width: screenWidth * 0.2,
-                  decoration: BoxDecoration(
-                    color: _colorsModel.titleBox,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-                    child: Center(
-                      child: Text("$key", style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 60, bottom: 10),
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: screenWidth * 0.6,
+                    height: 156,
+                    child: Image.asset(
+                      imgPath.isNotEmpty ? 'assets/stressIcons/$imgPath' : "assets/icons/friends.png",
                     ),
                   ),
-                ),
-                const SizedBox(height: 15,),
-                summary.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 15),
+                  Container(
+                    width: screenWidth * 0.6,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC3CDF5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Center(
+                        child: Text(
+                          key,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Cafe24Oneprettynight',
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<요약>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${summary[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                feedback.isEmpty ? Container() : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("<상담 튜터의 한 마디>", style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _colorsModel.gr1,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      )),
-                      const SizedBox(height: 5,),
-                      Text("• ${feedback[key] ?? ""}", style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontFamily: 'Cafe24Oneprettynight'
-                      ),),
-                    ],
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 15),
+                  summary.isEmpty
+                      ? Container()
+                      : Container(
+                          width: screenWidth * 0.6,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "[요약]",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "• ${summary[key] ?? ""}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                  const SizedBox(height: 10),
+                  feedback.isEmpty
+                      ? Container()
+                      : Container(
+                          width: screenWidth * 0.6,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "[상담 튜터의 한 마디]",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "• ${feedback[key] ?? ""}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                ],
+              ),
             ),
           ),
-        ),
+          Positioned(
+            top: -5,
+            left: 0,
+            right: 0,
+            child: Container(
+              width: screenWidth,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F1E5E),
+                border: Border.all(color: const Color(0xFF0F1E5E), width: 4),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Center(
+                child: Text(
+                  "대처 방안",
+                  style: const TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Cafe24Oneprettynight',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       );
     }
   }
+
 
   Widget selectDateWidget(screenWidth, isWeb) {
     bool _isExpanded = false;
@@ -910,8 +1147,8 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("날짜 선택", style: TextStyle(
-            fontSize: 14,
+          Text("[날짜 선택]", style: TextStyle(
+            fontSize: 20,
             color: _colorsModel.gr1,
             fontFamily: 'Cafe24Oneprettynight'
           ),),
@@ -965,7 +1202,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                       child: Text(
                         '날짜를 선택해주세요',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           color: _colorsModel.gr1,
                           fontFamily: 'Cafe24Oneprettynight'
                         ),
@@ -982,7 +1219,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                       child: Text(
                         '${formatDateTime(item)}',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           color: _colorsModel.gr1,
                           fontFamily: 'Cafe24Oneprettynight'
                         ),
@@ -1078,6 +1315,11 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
             _recentResult = recentResult;
             _results = results;
             _chartData = chartData;
+
+            _chartData = _chartData.map((data) {
+              return ChartData(data.date, data.stressLevel - 1); // 1만큼 감소
+            }).toList();
+
           });
         } else {
           Dialogs().onlyContentOneActionDialog(context: context, content: '기록 로드 중 오류\n${historyResList.last}', firstText: '확인');
@@ -1094,16 +1336,14 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
 
   String getEvaluationDescription(int score) {
     switch (score) {
-      case 5:
-        return "매우 높음";
       case 4:
-        return "높음";
+        return "매우 높음";
       case 3:
-        return "중간";
+        return "높음";
       case 2:
-        return "낮음";
+        return "중간";
       case 1:
-        return "매우 낮음";
+        return "낮음";
       default:
         return "평가되지 않음";
     }

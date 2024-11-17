@@ -88,11 +88,8 @@ class StressResult {
       return "높음";
     } else if (average >= 2.5) {
       return "중간";
-    } else if (average >= 1.5) {
-      return "낮음";
     } else {
-      return "매우 낮음";
-    }
+      return "낮음";
   }
-
+  }
 }

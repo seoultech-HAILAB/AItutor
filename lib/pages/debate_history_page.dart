@@ -133,14 +133,14 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
           }
 
           // Interaction 번호 처리
-          String interaction1 = evaluationResult.interaction1;
+          String interaction1 = evaluationResult.interaction1!;
           if (interaction1.startsWith("1.")) {
             interaction1 = interaction1.substring(2).trim();
           } else {
             interaction1 = "1. $interaction1";
           }
 
-          String interaction2 = evaluationResult.interaction2;
+          String interaction2 = evaluationResult.interaction2!;
           if (interaction2.startsWith("2.")) {
             interaction2 = interaction2.substring(2).trim();
           } else {
