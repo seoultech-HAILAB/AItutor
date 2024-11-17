@@ -13,8 +13,8 @@ class Dialogs {
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: Text('${title}', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.black),),
-            content: Text('${content}', style: TextStyle(fontSize: 14,),),
+            title: Text('${title}', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.black, fontFamily: 'Cafe24Oneprettynight'),),
+            content: Text('${content}', style: TextStyle(fontSize: 14, fontFamily: 'Cafe24Oneprettynight'),),
             actions: [
               CupertinoDialogAction(
                 onPressed: () {
@@ -24,6 +24,7 @@ class Dialogs {
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: _colorsModel.cupertinoAlertBtnText,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
               CupertinoDialogAction(
@@ -34,6 +35,7 @@ class Dialogs {
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: _colorsModel.cupertinoAlertBtnText,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ],
@@ -49,8 +51,8 @@ class Dialogs {
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: Text('${title}', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.black),),
-            content: Text('${content}', style: TextStyle(fontSize: 13,),),
+            title: Text('${title}', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.black, fontFamily: 'Cafe24Oneprettynight'),),
+            content: Text('${content}', style: TextStyle(fontSize: 13, fontFamily: 'Cafe24Oneprettynight'),),
             actions: [
               CupertinoDialogAction(
                 onPressed: firstPressed,
@@ -58,6 +60,7 @@ class Dialogs {
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: _colorsModel.bl,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ],
@@ -74,7 +77,7 @@ class Dialogs {
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            content: Text('${content}', style: TextStyle(fontSize: 14,),),
+            content: Text('${content}', style: TextStyle(fontSize: 14, fontFamily: 'Cafe24Oneprettynight'),),
             actions: [
               CupertinoDialogAction(
                 onPressed: action ?? () {
@@ -89,6 +92,7 @@ class Dialogs {
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: _colorsModel.bl,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ],
@@ -103,7 +107,7 @@ class Dialogs {
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            content: Text('${content}', style: TextStyle(fontSize: 14,),),
+            content: Text('${content}', style: TextStyle(fontSize: 14, fontFamily: 'Cafe24Oneprettynight'),),
             actions: [
               CupertinoDialogAction(
                 onPressed: firstPressed,
@@ -111,6 +115,7 @@ class Dialogs {
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: _colorsModel.bl,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
               CupertinoDialogAction(
@@ -119,6 +124,7 @@ class Dialogs {
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: _colorsModel.bl,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ],
@@ -153,7 +159,7 @@ class Dialogs {
               children: [
                 Text(
                   "5초 후에 평가결과 페이지로 이동합니다",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: _colorsModel.gr1),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: _colorsModel.gr1, fontFamily: 'Cafe24Oneprettynight'),
                 ),
               ],
             ),

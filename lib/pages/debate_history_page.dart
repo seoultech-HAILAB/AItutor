@@ -60,6 +60,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
               child: Text("${_comment}", style: const TextStyle(
                 fontSize: 20,
                 color: Colors.black,
+                fontFamily: 'Cafe24Oneprettynight'
               ), textAlign: TextAlign.center, ),
             ),
             _comment.isEmpty ? Container() : const SizedBox(height: 15,),
@@ -69,6 +70,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                 child: Text("아직 대화 기록이 없습니다", style: TextStyle(
                   fontSize: 16,
                   color: _colorsModel.gr1,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             )
@@ -84,7 +86,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
     // 각 evaluationResult의 explain 부분을 기준으로 가장 큰 높이를 계산
     double maxExplainHeight = evaluationResults.map((result) {
       final textPainter = TextPainter(
-        text: TextSpan(text: ": ${result.explain}", style: const TextStyle(fontSize: 16)),
+        text: TextSpan(text: ": ${result.explain}", style: const TextStyle(fontSize: 16, fontFamily: 'Cafe24Oneprettynight')),
         textDirection: ui.TextDirection.ltr,
         maxLines: null,
       );
@@ -104,7 +106,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
       ].join("\n");
 
       final textPainter = TextPainter(
-        text: TextSpan(text: combinedText, style: const TextStyle(fontSize: 16)),
+        text: TextSpan(text: combinedText, style: const TextStyle(fontSize: 16, fontFamily: 'Cafe24Oneprettynight')),
         textDirection: ui.TextDirection.ltr,
         maxLines: null,
       );
@@ -175,6 +177,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                             fontSize: 20, // 글씨 크기를 키움
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Cafe24Oneprettynight'
                           ),
                         ),
                       ),
@@ -187,6 +190,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.black,
+                            fontFamily: 'Cafe24Oneprettynight'
                           ),
                           maxLines: null,
                         ),
@@ -201,6 +205,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                             fontSize: 16,
                             color: evaluationColor,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Cafe24Oneprettynight'
                           ),
                         ),
                       ),
@@ -222,6 +227,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
+                                    fontFamily: 'Cafe24Oneprettynight'
                                   ),
                                 ),
                                 const SizedBox(height: 10,), // 한줄 띄움
@@ -231,6 +237,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
+                                    fontFamily: 'Cafe24Oneprettynight'
                                   ),
                                 ),
                                 const SizedBox(height: 10,), // 한줄 띄움
@@ -240,6 +247,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
+                                    fontFamily: 'Cafe24Oneprettynight'
                                   ),
                                 ),
                                 // Reason 1 with right arrow
@@ -249,6 +257,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                                     fontSize: 16,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cafe24Oneprettynight'
                                   ),
                                 ),
                                 const SizedBox(height: 10,), // 한줄 띄움
@@ -258,6 +267,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
+                                    fontFamily: 'Cafe24Oneprettynight'
                                   ),
                                 ),
                                 // Reason 2 with right arrow
@@ -267,6 +277,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                                     fontSize: 16,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cafe24Oneprettynight'
                                   ),
                                 ),
                               ],
@@ -301,8 +312,9 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("날짜 선택", style: TextStyle(
-              fontSize: 14,
+              fontSize: 20,
               color: _colorsModel.gr1,
+              fontFamily: 'Cafe24Oneprettynight'
             ),),
             const SizedBox(height: 5,),
             Container(
@@ -356,6 +368,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                           style: TextStyle(
                             fontSize: 16,
                             color: _colorsModel.gr1,
+                            fontFamily: 'Cafe24Oneprettynight'
                           ),
                         ),
                       ),
@@ -370,8 +383,9 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                         child: Text(
                           '${formatDateTime(item)}',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 20,
                             color: _colorsModel.gr1,
+                            fontFamily: 'Cafe24Oneprettynight'
                           ),
                         ),
                       ),
@@ -476,9 +490,8 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
     String month = DateFormat('MM').format(dateTime);
     String day = DateFormat('dd').format(dateTime);
     String hour = DateFormat('hh').format(dateTime);
-    String minute = DateFormat('mm').format(dateTime);
     String period = DateFormat('a').format(dateTime) == 'AM' ? '오전' : '오후';
 
-    return '$year년 $month월 $day일 $period $hour시 $minute분';
+    return '$year년 $month월 $day일 $period $hour시';
   }
 }

@@ -108,6 +108,7 @@ class _PdfViewerWidgetState extends State<PdfViewerWidget> {
                       child: Text("에세이 작성하기", style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ),
                   ),

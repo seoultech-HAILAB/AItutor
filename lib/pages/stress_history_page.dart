@@ -76,6 +76,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                 child: Text("아직 대화 기록이 없습니다", style: TextStyle(
                   fontSize: 16,
                   color: _colorsModel.gr1,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ) : Column(
@@ -129,6 +130,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                 child: Text("지난 결과 조회하기", style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ),
@@ -139,17 +141,20 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                 text: '학업 스트레스 변화 추이',
                 textStyle: TextStyle(
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
                 )),
             primaryXAxis: DateTimeAxis(
               majorGridLines: MajorGridLines(width: 0),
               labelAlignment: LabelAlignment.center,  // 레이블을 중앙에 정렬
               title: AxisTitle(text: '날짜', textStyle: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               )),
             ),
             primaryYAxis: NumericAxis(
               title: const AxisTitle(text: '스트레스 수준', textStyle: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               )),
               majorGridLines: const MajorGridLines(width: 0),
               minimum: 0,
@@ -158,21 +163,21 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
               axisLabelFormatter: (AxisLabelRenderDetails details) {
                 switch (details.value.toInt()) {
                   case 0:
-                    return ChartAxisLabel('', const TextStyle(color: Colors.transparent));  // 0에 대한 처리 (투명 라벨)
+                    return ChartAxisLabel('', const TextStyle(color: Colors.transparent, fontFamily: 'Cafe24Oneprettynight'));  // 0에 대한 처리 (투명 라벨)
                   case 1:
-                    return ChartAxisLabel('매우 낮음', const TextStyle(color: Colors.black));
+                    return ChartAxisLabel('매우 낮음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
                   case 2:
-                    return ChartAxisLabel('낮음', const TextStyle(color: Colors.black));
+                    return ChartAxisLabel('낮음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
                   case 3:
-                    return ChartAxisLabel('중간', const TextStyle(color: Colors.black));
+                    return ChartAxisLabel('중간', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
                   case 4:
-                    return ChartAxisLabel('높음', const TextStyle(color: Colors.black));
+                    return ChartAxisLabel('높음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
                   case 5:
-                    return ChartAxisLabel('매우 높음', const TextStyle(color: Colors.black));
+                    return ChartAxisLabel('매우 높음', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
                   case 6:
-                    return ChartAxisLabel('', const TextStyle(color: Colors.transparent));  // 6에 대한 처리 (투명 라벨)
+                    return ChartAxisLabel('', const TextStyle(color: Colors.transparent, fontFamily: 'Cafe24Oneprettynight'));  // 6에 대한 처리 (투명 라벨)
                   default:
-                    return ChartAxisLabel('', const TextStyle(color: Colors.black));
+                    return ChartAxisLabel('', const TextStyle(color: Colors.black, fontFamily: 'Cafe24Oneprettynight'));
                 }
               },
             ),
@@ -193,6 +198,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
               Text("${_selectTime?.month}월 ${_selectTime?.day}일 ${_userModel.nm ?? ""}님의 학업 스트레스는 ...", style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Cafe24Oneprettynight'
               ),),
               const SizedBox(height: 15,),
               Row(
@@ -208,7 +214,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                             child: SizedBox(
                               width: stressImageWidth,
                               height: SizeCalculate().heightCalculate(screenHeight, 208),
-                              child: Image.asset("assets/icons/stress.png"),
+                              child: Image.asset("assets/icons/stressIcons.png"),
                             ),
                           ),
                           SizedBox(height: SizeCalculate().heightCalculate(screenHeight, 70),),
@@ -230,8 +236,8 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         text: TextSpan(
                             children: [
                               TextSpan(text: '${_selectResult.averageStressDescription} 정도',
-                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: averageColor),),
-                              const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, )),
+                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: averageColor, fontFamily: 'Cafe24Oneprettynight'),),
+                              const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Cafe24Oneprettynight')),
                             ])
                     ),
                   ),
@@ -317,6 +323,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                 child: Text("${_userModel.nm ?? ""}님의 학업 스트레스", style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
               ),
             ),
@@ -325,6 +332,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
           Text("${_recentTime?.month}월 ${_recentTime?.day}일 ${_userModel.nm ?? ""}님의 학업 스트레스는 ...", style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
+            fontFamily: 'Cafe24Oneprettynight'
           ),),
           const SizedBox(height: 15,),
           Row(
@@ -340,7 +348,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         child: SizedBox(
                           width: stressImageWidth,
                           height: SizeCalculate().heightCalculate(screenHeight, 208),
-                          child: Image.asset("assets/icons/stress.png"),
+                          child: Image.asset("assets/icons/stressIcons.png"),
                         ),
                       ),
                       SizedBox(height: SizeCalculate().heightCalculate(screenHeight, 70),),
@@ -362,8 +370,8 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                     text: TextSpan(
                         children: [
                           TextSpan(text: '${_recentResult.averageStressDescription} 정도',
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: averageColor),),
-                          const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, )),
+                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: averageColor, fontFamily: 'Cafe24Oneprettynight'),),
+                          const TextSpan(text: '의  스트레스를 겪고 있어요!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Cafe24Oneprettynight')),
                         ])
                 ),
               ),
@@ -438,6 +446,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
                 const SizedBox(height: 15,),
                 SizedBox(
@@ -458,6 +467,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 18,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ),
                   ),
@@ -476,11 +486,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${summary[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -499,11 +511,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${feedback[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -555,6 +569,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
                 const SizedBox(height: 15,),
                 SizedBox(
@@ -575,6 +590,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 18,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ),
                   ),
@@ -593,11 +609,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${summary[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -616,11 +634,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${feedback[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -675,6 +695,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
                 const SizedBox(height: 15,),
                 SizedBox(
@@ -695,6 +716,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 18,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ),
                   ),
@@ -713,11 +735,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${summary[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -736,11 +760,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${feedback[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -794,6 +820,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                   fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'
                 ),),
                 const SizedBox(height: 15,),
                 SizedBox(
@@ -814,6 +841,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 18,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ),
                   ),
@@ -832,11 +860,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${summary[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -855,11 +885,13 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _colorsModel.gr1,
+                        fontFamily: 'Cafe24Oneprettynight'
                       )),
                       const SizedBox(height: 5,),
                       Text("• ${feedback[key] ?? ""}", style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black,
+                        fontFamily: 'Cafe24Oneprettynight'
                       ),),
                     ],
                   ),
@@ -881,6 +913,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
           Text("날짜 선택", style: TextStyle(
             fontSize: 14,
             color: _colorsModel.gr1,
+            fontFamily: 'Cafe24Oneprettynight'
           ),),
           const SizedBox(height: 5,),
           Container(
@@ -934,6 +967,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         style: TextStyle(
                           fontSize: 16,
                           color: _colorsModel.gr1,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),
                       ),
                     ),
@@ -950,6 +984,7 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
                         style: TextStyle(
                           fontSize: 16,
                           color: _colorsModel.gr1,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),
                       ),
                     ),
@@ -1132,10 +1167,9 @@ class _StressHistoryPageState extends State<StressHistoryPage> {
     String month = DateFormat('MM').format(dateTime);
     String day = DateFormat('dd').format(dateTime);
     String hour = DateFormat('hh').format(dateTime);
-    String minute = DateFormat('mm').format(dateTime);
     String period = DateFormat('a').format(dateTime) == 'AM' ? '오전' : '오후';
 
-    return '$year년 $month월 $day일 $period $hour시 $minute분';
+    return '$year년 $month월 $day일 $period $hour시';
   }
 
   double calculateAverageScore(List<int> scores) {

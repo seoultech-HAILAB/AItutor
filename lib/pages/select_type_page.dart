@@ -97,7 +97,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
         imagePath = "assets/icons/debate.png";
         break;
       case "stress":
-        imagePath = "assets/icons/counsel.png";
+        imagePath = "assets/icons/stress.png";
         break;
       default:
         imagePath = "assets/icons/default.png";  // 기본 이미지 경로 설정
@@ -120,23 +120,25 @@ class _SelectTypePageState extends State<SelectTypePage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),  // 둥근 사각형을 위해 모서리 반경 설정
                   child: Container(
-                    width: 65,
-                    height: 65,
+                    width: 80,
+                    height: 80,
                     child: Image.asset(imagePath, fit: BoxFit.cover),
                   ),
                 ),
-                const SizedBox(width: 10,),
+                const SizedBox(width: 15,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("${chatModel.key ?? ''}", style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 35,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
+                      fontFamily: 'Cafe24Oneprettynight'
                     ),),
                     Text("${_linkedTimeMap[chatModel.key] ?? "${chatModel.key}와 대화해보세요!"}", style: TextStyle(
-                      fontSize: 18,
-                      color: _colorsModel.gr2,
+                      fontSize: 25,
+                      color: const Color(0xff3d3d3d),
+                      fontFamily: 'Cafe24Oneprettynight'
                     ),textAlign: TextAlign.left,),
                   ],
                 ),
@@ -155,8 +157,9 @@ class _SelectTypePageState extends State<SelectTypePage> {
             ),
             const SizedBox(height: 10,),
             Text("${chatModel.explain ?? ''}", style: TextStyle(
-              fontSize: 18,
-              color: _colorsModel.gr2,
+              fontSize: 25,
+              color: const Color(0xff3d3d3d),
+              fontFamily: 'Cafe24Oneprettynight'
             ),textAlign: TextAlign.left,),
             !isWeb ? const SizedBox(height: 20,) : const Spacer(),  // 넓힐 수 있는 최대 간격을 넓혀줌
             const SizedBox(height: 10,),
@@ -185,8 +188,9 @@ class _SelectTypePageState extends State<SelectTypePage> {
                         child: Text(
                           _getButtonText(chatModel.type),
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 25,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Cafe24Oneprettynight'
                           ),
                         ),
                       ),
@@ -222,8 +226,9 @@ class _SelectTypePageState extends State<SelectTypePage> {
                       padding: EdgeInsets.only(top: 10, bottom: 10),
                       child: Center(
                         child: Text("평가 기록 보기", style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 25,
                           fontWeight: FontWeight.bold,
+                          fontFamily: 'Cafe24Oneprettynight'
                         ),),
                       ),),
                   ),

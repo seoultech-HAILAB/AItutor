@@ -15,6 +15,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quil;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:tuple/tuple.dart';
 
 class NoteWidget extends StatefulWidget {
   const NoteWidget({Key? key,}) : super(key: key);
@@ -227,6 +228,16 @@ class _NoteWidgetState extends State<NoteWidget> {
                       selectionHandleColor: _colorsModel.bl,
                     ),
                     customStyles: DefaultStyles(
+                      paragraph: DefaultTextBlockStyle(
+                        TextStyle(
+                          fontSize: 20,
+                          color: _colorsModel.bl,
+                          fontFamily: 'Cafe24Oneprettynight'
+                        ),
+                        const VerticalSpacing(0, 0), // verticalSpacing
+                        const VerticalSpacing(0, 0), // lineSpacing
+                        null, // decoration
+                      ),
                       color: _colorsModel.bl,
                     ),
                     sharedConfigurations: const quil.QuillSharedConfigurations(
@@ -243,15 +254,22 @@ class _NoteWidgetState extends State<NoteWidget> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: _colorsModel.bl),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                child: Text(
-                  '제출하기',
-                  style: TextStyle(
-                    color: _colorsModel.bl,
-                    fontSize: 16,
+              child: InkWell( // 클릭 가능하도록 InkWell로 감싸기
+                onTap: () {
+                  _saveNote(); // 버튼 클릭 시 호출할 함수
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Text(
+                    '제출하기',
+                    style: TextStyle(
+                      color: _colorsModel.bl,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Cafe24Oneprettynight',
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
