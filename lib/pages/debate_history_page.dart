@@ -30,8 +30,10 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
       {}; // {Datetime time : {'comment': , 'result': List<DebateResult>}}
   DateTime? _recentTime;
   DateTime? _selectTime;
-  String _comment = '';
-  List<DebateResult> _results = [];
+  String _selectComment = '';
+  String _recentComment = '';
+  List<DebateResult> _selectResults = [];
+  List<DebateResult> _recentResults = [];
   bool _loading = false;
 
   @override
@@ -50,7 +52,6 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
     bool isWeb =
         ClassificationPlatform().classifyWithScreenSize(context: context) == 2;
 
-    print('_results ${_results}');
     return Stack(
       children: [
         ListView(
@@ -66,12 +67,12 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                 : const SizedBox(
                     height: 15,
                   ),
-            _comment.isEmpty
+            _recentComment.isEmpty
                 ? Container()
                 : Padding(
                     padding: const EdgeInsets.only(left: 60, right: 60),
                     child: Text(
-                      "${_comment}",
+                      "${_recentComment}",
                       style: const TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -79,13 +80,13 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-            _comment.isEmpty
+            _recentComment.isEmpty
                 ? Container()
                 : const SizedBox(
                     height: 15,
                   ),
-            _results.isEmpty
-                ? _comment.isNotEmpty
+            _recentResults.isEmpty
+                ? _recentComment.isNotEmpty
                     ? Container()
                     : Center(
                         child: Padding(
@@ -102,10 +103,10 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                 : Column(
                     children: [
                       SizedBox(height: 8),
-                      recentEvaluateWidget(screenWidth, screenWidth, isWeb,
-                          _results), // _results 전체를 전달
-                      evaluateWidget(screenWidth, screenWidth, isWeb,
-                          _results), // _results 전체를 전달
+                      recentEvaluateWidget(
+                          screenWidth, screenWidth, isWeb, _recentResults),
+                      evaluateWidget(
+                          screenWidth, screenWidth, isWeb, _selectResults),
                     ],
                   ),
           ],
@@ -1040,8 +1041,8 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
                     setState(() {
                       _selectTime = value;
-                      _comment = comment;
-                      _results = results;
+                      _selectComment = comment;
+                      _selectResults = results;
                     });
                   },
                   buttonHeight: 40,
@@ -1073,8 +1074,8 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
         List chatEvaluations = _pageProvider.chatEvaluations;
         if (chatEvaluations.isNotEmpty) {
           setState(() {
-            _comment = chatEvaluations.first;
-            _results = List<DebateResult>.from(chatEvaluations.last);
+            _recentComment = chatEvaluations.first;
+            _recentResults = List<DebateResult>.from(chatEvaluations.last);
           });
         }
       } else {
@@ -1095,31 +1096,50 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
           historyMap = tempHistoryMap;
 
-          DateTime? recentTime;
           DateTime? selectTime;
+          DateTime? recentTime;
           String comment = '';
           List<DebateResult> results = [];
+          DebateResult selectResult = DebateResult();
+          DebateResult recentResult = DebateResult();
+          String selectComment = '';
+          String recentComment = '';
+          List<DebateResult> selectResults = [];
+          List<DebateResult> recentResults = [];
 
           if (historyMap.isNotEmpty) {
             // selectTime = historyMap.keys.toList().first;
             List timeList = historyMap.keys.toList();
             if (timeList.length > 1) {
               selectTime = timeList[1];
+
+              Map selectResultMap = historyMap[selectTime] ?? {};
+              selectComment = selectResultMap['comment'] ?? '';
+              selectResults =
+                  List<DebateResult>.from(selectResultMap['result'] ?? []);
             }
 
             recentTime = timeList.first;
+            Map recentResultMap = historyMap[recentTime] ?? {};
+            recentComment = recentResultMap['comment'] ?? '';
+            recentResults =
+                List<DebateResult>.from(recentResultMap['result'] ?? []);
 
-            Map dataMap = historyMap[selectTime] ?? {};
-            comment = dataMap['comment'] ?? '';
-            results = List<DebateResult>.from(dataMap['result'] ?? []);
+            if (selectTime != null) {
+              Map dataMap = historyMap[selectTime] ?? {};
+              comment = dataMap['comment'] ?? '';
+              results = List<DebateResult>.from(dataMap['result'] ?? []);
+            }
           }
 
           setState(() {
             _historyMap = historyMap;
             _recentTime = recentTime;
             _selectTime = selectTime;
-            _comment = comment;
-            _results = results;
+            _recentComment = recentComment;
+            _selectComment = selectComment;
+            _recentResults = recentResults;
+            _selectResults = selectResults;
           });
         } else {
           Dialogs().onlyContentOneActionDialog(
