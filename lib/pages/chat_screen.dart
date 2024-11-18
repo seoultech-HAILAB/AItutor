@@ -93,9 +93,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 Container(
                   width: screenWidth * 0.972,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: _colorsModel.wh,
-                    border: Border.all(color: _colorsModel.bl),
+                    borderRadius: BorderRadius.circular(4),
+                    color: const Color(0xFF0F1E5E),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(5),
@@ -117,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 child: SelectableText(
                                   "${docsModel.iconNm}",
                                   style: const TextStyle(
-                                    fontSize: 30,
+                                    fontSize: 25,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Cafe24Oneprettynight'
                                   ),
@@ -125,15 +124,18 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            SelectableText(
-                              "${docsModel.title ?? ''}",
-                              style: const TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontFamily: 'Cafe24Oneprettynight'
+                            Center(
+                              child: SelectableText(
+                                "${docsModel.title ?? ''}",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontFamily: 'Cafe24Oneprettynight'
+                                ),
                               ),
-                            ),
+                            )
                           ],
                         ),
                       ],
@@ -156,10 +158,10 @@ class _ChatScreenState extends State<ChatScreen> {
               Container(
                 width: screenWidth * 0.47,
                 height: screenHeight * 0.8,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _colorsModel.bl),
-                ),
+                // decoration: BoxDecoration(
+                //   borderRadius: BorderRadius.circular(4),
+                //   border: Border.all(color: _colorsModel.bl, width: 2),
+                // ),
                 child: GestureDetector(
                   onTap: () {
                     // 바탕 터치시 키보드를 내리기 위함
