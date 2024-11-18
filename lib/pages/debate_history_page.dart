@@ -131,6 +131,20 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
     arrowPadding = (debateImageWidth - 99) / 2;
 
+    String averageResult = getAverageResult(evaluationResults);
+
+    if (averageResult == '탁월함') {
+      averageColor = Colors.green;
+    } else if (averageResult == '우수함') {
+      averageColor = Colors.green[300]!;
+    } else if (averageResult == '적절함') {
+      averageColor = Colors.orange;
+    } else if (averageResult == '보통') {
+      averageColor = Colors.orange[300]!;
+    } else if (averageResult == '미흡함') {
+      averageColor = Colors.red;
+    }
+
     // 각 evaluationResult의 explain 부분을 기준으로 가장 큰 높이를 계산
     double maxExplainHeight = evaluationResults.map((result) {
       final textPainter = TextPainter(
@@ -249,11 +263,11 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                 child: RichText(
                     text: TextSpan(children: [
                   TextSpan(
-                    text: '적절함(중)',
+                    text: averageResult,
                     style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
-                        color: _colorsModel.orange,
+                        color: averageColor,
                         fontFamily: 'Cafe24Oneprettynight'),
                   ),
                   const TextSpan(
@@ -271,14 +285,14 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
           ),
           Row(
             children: evaluationResults.map((evaluationResult) {
-              Color evaluationColor = _colorsModel.blue;
+              Color evaluationColor = Colors.grey;
 
               if (evaluationResult.evaluation.toString().contains('상')) {
-                evaluationColor = _colorsModel.blue;
+                evaluationColor = Colors.green;
               } else if (evaluationResult.evaluation.toString().contains('중')) {
-                evaluationColor = _colorsModel.orange;
+                evaluationColor = Colors.orange;
               } else if (evaluationResult.evaluation.toString().contains('하')) {
-                evaluationColor = _colorsModel.red;
+                evaluationColor = Colors.red;
               }
 
               // Interaction 번호 처리
@@ -534,6 +548,20 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
     arrowPadding = (debateImageWidth - 99) / 2;
 
+    String averageResult = getAverageResult(evaluationResults);
+
+    if (averageResult == '탁월함') {
+      averageColor = Colors.green;
+    } else if (averageResult == '우수함') {
+      averageColor = Colors.green[300]!;
+    } else if (averageResult == '적절함') {
+      averageColor = Colors.orange;
+    } else if (averageResult == '보통') {
+      averageColor = Colors.orange[300]!;
+    } else if (averageResult == '미흡함') {
+      averageColor = Colors.red;
+    }
+
     // 각 evaluationResult의 explain 부분을 기준으로 가장 큰 높이를 계산
     double maxExplainHeight = evaluationResults.map((result) {
       final textPainter = TextPainter(
@@ -653,11 +681,11 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                 child: RichText(
                     text: TextSpan(children: [
                   TextSpan(
-                    text: '적절함(중)',
+                    text: averageResult,
                     style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
-                        color: _colorsModel.orange,
+                        color: averageColor,
                         fontFamily: 'Cafe24Oneprettynight'),
                   ),
                   const TextSpan(
@@ -675,14 +703,14 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
           ),
           Row(
             children: evaluationResults.map((evaluationResult) {
-              Color evaluationColor = _colorsModel.blue;
+              Color evaluationColor = Colors.grey;
 
               if (evaluationResult.evaluation.toString().contains('상')) {
-                evaluationColor = _colorsModel.blue;
+                evaluationColor = Colors.green;
               } else if (evaluationResult.evaluation.toString().contains('중')) {
-                evaluationColor = _colorsModel.orange;
+                evaluationColor = Colors.orange;
               } else if (evaluationResult.evaluation.toString().contains('하')) {
-                evaluationColor = _colorsModel.red;
+                evaluationColor = Colors.red;
               }
 
               // Interaction 번호 처리
@@ -1163,5 +1191,35 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
     String period = DateFormat('a').format(dateTime) == 'AM' ? '오전' : '오후';
 
     return '$year년 $month월 $day일 $period $hour시';
+  }
+
+  String getAverageResult(List<DebateResult> results) {
+    int count_high = 0;
+    int count_medium = 0;
+    int count_low = 0;
+
+    for (DebateResult result in results) {
+      if (result.evaluation.toString().contains('상')) {
+        count_high++;
+      } else if (result.evaluation.toString().contains('중')) {
+        count_medium++;
+      } else if (result.evaluation.toString().contains('하')) {
+        count_low++;
+      }
+    }
+
+    if (count_high == 4) {
+      return '탁월함';
+    } else if ((count_high > 1) && (count_medium > 1) && (count_low < 1)) {
+      return '우수함';
+    } else if (count_medium == 4) {
+      return '적절함';
+    } else if ((count_medium < 1) && (count_low > 1) && (count_high > 1)) {
+      return '보통';
+    } else if (count_low == 4) {
+      return '미흡함';
+    } else {
+      return '해당 없음';
+    }
   }
 }
