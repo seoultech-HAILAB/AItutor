@@ -179,78 +179,122 @@ class _ArgumentHomeState extends State<ArgumentHome> {
     }
 
     String? imagePath;
+    String? boldText;
+
     if (docsModel.key == "AI LAW") {
       imagePath = "assets/icons/AIAct.png";
+      boldText = "엄격한 규제를 통한 안전한 AI 산업 육성 vs 탄력적 규제를 통한 혁신적 산업 육성";
     } else if (docsModel.key == "TROLLEY") {
       imagePath = "assets/icons/TrolleyProblem.png";
+      boldText = "선로를 돌려야 한다 vs 선로를 돌리면 안된다";
     }
 
     Widget content = Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(0),
       child: Column(
         mainAxisSize: MainAxisSize.min, // 콘텐츠 크기에 따라 높이 자동 조정
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: _iconColor,
-                  borderRadius: BorderRadius.circular(12),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white, // 카드 배경색
+              border: Border.all(
+                color: const Color(0xFF0F1E5E), // 아이콘 색상
+                width: 4, // 아이콘 테두리 두께
+              ),            
+            ),
+            padding: const EdgeInsets.all(20), // 내부 여백
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 남색 박스로 제목 감싸기
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F1E5E), // 남색 배경
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Row(
+                    children: [
+                      // 아이콘
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _iconColor, // 아이콘 배경색
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            docsModel.iconNm ?? '',
+                            style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black, // 아이콘 글씨 흰색
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10), // 아이콘과 제목 간 간격
+                      // 제목
+                      Expanded(
+                        child: Text(
+                          docsModel.title ?? '',
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // 제목 글씨 흰색
+                          ),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2, // 타이틀이 너무 길 경우 2줄로 제한
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                width: 50,
-                height: 50,
-                child: Center(
-                  child: Text(
-                    docsModel.iconNm ?? '',
-                    style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Cafe24Oneprettynight',
+                const SizedBox(height: 10),
+                if (imagePath != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Center(
+                      child: Image.asset(
+                        imagePath,
+                        width: isWeb ? 600 : screenWidth * 0.8, // 이미지 크기 제한
+                        height: isWeb ? 300 : screenWidth * 0.5,
+                        fit: BoxFit.contain, // 이미지를 박스 크기에 맞게 조정
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  docsModel.title ?? '',
-                  style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: 'Cafe24Oneprettynight',
+                if (boldText != null) // boldText가 있을 경우 추가
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0),
+                    child: Center(
+                      child: Text(
+                        boldText,
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2, // 타이틀이 너무 길 경우 2줄로 제한
+                  const SizedBox(height: 10),
+                Text(
+                  docsModel.explain ?? '',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.black, // 설명 글씨 색
+                  ),
+                  softWrap: true,
+                  overflow: TextOverflow.clip,
+                  textAlign: TextAlign.left,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          if (imagePath != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Center(
-                child: Image.asset(
-                  imagePath,
-                  width: isWeb ? 600 : screenWidth * 0.8, // 이미지 크기 제한
-                  height: isWeb ? 300 : screenWidth * 0.5,
-                  fit: BoxFit.contain, // 이미지를 박스 크기에 맞게 조정
-                ),
-              ),
+              ],
             ),
-          Text(
-            docsModel.explain ?? '',
-            style: TextStyle(
-              fontSize: 25,
-              color: _colorsModel.gr2,
-              fontFamily: 'Cafe24Oneprettynight',
-            ),
-            softWrap: true,
-            overflow: TextOverflow.clip,
-            textAlign: TextAlign.left,
           ),
           const SizedBox(height: 20),
         ],
@@ -271,11 +315,6 @@ class _ArgumentHomeState extends State<ArgumentHome> {
           constraints: BoxConstraints(
             maxWidth: isWeb ? 700 : screenWidth * 0.9, // 박스 최대 너비 설정
             minHeight: 350, // 박스의 최소 높이 설정 (높이를 약간 키움)
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: _colorsModel.wh,
-            border: Border.all(color: _colorsModel.bl),
           ),
           child: content,
         ),

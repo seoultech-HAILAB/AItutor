@@ -130,8 +130,8 @@ class _NoteWidgetState extends State<NoteWidget> {
       height: screenHeight * 0.8,
       width: screenWidth * 0.47,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _colorsModel.bl),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: _colorsModel.bl, width: 2),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -250,9 +250,9 @@ class _NoteWidgetState extends State<NoteWidget> {
             Container(
               width: screenWidth * 0.15,
               decoration: BoxDecoration(
-                color: _colorsModel.wh,
+                color: _colorsModel.gr4,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _colorsModel.bl),
+                border: Border.all(color: _colorsModel.bl, width: 2),
               ),
               child: InkWell( // 클릭 가능하도록 InkWell로 감싸기
                 onTap: () {
