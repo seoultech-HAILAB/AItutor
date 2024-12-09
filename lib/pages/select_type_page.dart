@@ -200,7 +200,6 @@ class _SelectTypePageState extends State<SelectTypePage> {
               ),
             ),
             const SizedBox(height: 10,),
-            chatModel.type == "argument" ? Container() :
             _hasEvaluateHistory[chatModel.key] == true ?
             Padding(
               padding: const EdgeInsets.only(left: 40, right: 40),
@@ -208,12 +207,13 @@ class _SelectTypePageState extends State<SelectTypePage> {
                 onTap: () async {
                   _pageProvider.updateIsFromChat(false);
                   _pageProvider.updateChatModel(chatModel);
-
                   if (chatModel.type == "debate") {
                     _pageProvider.updatePage(2);
                   } else if (chatModel.type == "stress"){
                     _pageProvider.updatePage(4);
-                  }
+                  } else if (chatModel.type == "argument") {
+                    _pageProvider.updatePage(6);
+                  } 
                 },
                 child: MouseRegion( // 마우스를 감지하여 마우스 모양을 띄워줌
                   cursor: SystemMouseCursors.click,
