@@ -1,10 +1,12 @@
 import 'package:aitutor/models/user_model.dart';
+import 'package:aitutor/pages/argument_history_page.dart';
 import 'package:aitutor/pages/argument_home.dart';
 import 'package:aitutor/pages/chat_screen.dart';
 import 'package:aitutor/pages/debate_history_page.dart';
 import 'package:aitutor/pages/login_page.dart';
 import 'package:aitutor/pages/select_type_page.dart';
 import 'package:aitutor/pages/stress_history_page.dart';
+import 'package:aitutor/pages/argument_history_page.dart';
 import 'package:aitutor/providers/page_provider.dart';
 import 'package:aitutor/providers/validate_provider.dart';
 import 'package:aitutor/services/auth_service.dart';
@@ -99,6 +101,8 @@ class _HomePageState extends State<HomePage> {
         return const StressHistoryPage();
       } else if (_pageProvider.page == 5) {
         return const ArgumentHome();
+      } else if (_pageProvider.page == 6) {
+        return const ArgumentHistoryPage();
       }
       return Container();
     } else {

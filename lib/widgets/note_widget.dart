@@ -1,8 +1,11 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:aitutor/models/colors_model.dart';
+import 'package:aitutor/pages/argument_history_page.dart';
+import 'package:aitutor/pages/debate_history_page.dart';
 import 'package:aitutor/providers/page_provider.dart';
 import 'package:aitutor/services/argument_services.dart';
 import 'package:aitutor/services/auth_service.dart';
@@ -16,6 +19,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quil;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tuple/tuple.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:aitutor/services/chat_services.dart';
+
 
 class NoteWidget extends StatefulWidget {
   const NoteWidget({Key? key,}) : super(key: key);
@@ -53,14 +59,52 @@ class _NoteWidgetState extends State<NoteWidget> {
 
     try {
       final contents = jsonEncode(_quillController.document.toDelta().toJson());
-      await _storage.write(key: '${_pageProvider.selectDocsModel.title}note', value: contents);
+      final uid = AuthService().getUid(); // 유저의 uid 가져오기
+      final chatServices = ChatServices();
+
+      // Evaluate the content
+      List evaluatePromptRes = await chatServices.getEvalulatePrompt(key: 'AI 글쓰기 튜터');
+      if (!evaluatePromptRes.first) {
+        throw Exception('Error: Unable to retrieve evaluation prompt.');
+      }
+      String evaluatePrompt = evaluatePromptRes.last;
+      String finalPrompt = evaluatePrompt.replaceAll('<content>', contents);
+
+      // GPT API 응답 요청
+      String response = await chatServices.getResponse(
+        [
+          {'role': 'user', 'content': contents}
+        ],
+        finalPrompt,
+        Provider.of<PageProvider>(context, listen: false).gptKey,
+      );
+
+      // 현재 시간을 Firebase-friendly 형식으로 변환
+      final now = DateTime.now();
+      final formattedTime = "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}";
+
+      // Firebase 데이터베이스 경로 수정
+      await FirebaseDatabase.instance
+          .ref('Chat/AI 글쓰기 튜터/History/$uid/AI LAW/$formattedTime') // 형식에 맞는 시간 사용
+          .set({
+        'contents': contents,
+        'response': response, // Evaluation response 저장
+      });
 
       setState(() {
         _loading = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('노트가 성공적으로 저장되었습니다.')),
+        const SnackBar(content: Text('노트가 성공적으로 저장되었습니다.')),
+      );
+
+      // Navigate to ArgumentHistoryPage
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ArgumentHistoryPage(),
+        ),
       );
     } catch (e) {
       setState(() {
