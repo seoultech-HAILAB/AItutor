@@ -7,16 +7,18 @@ import 'package:aitutor/services/chat_services.dart';
 import 'package:aitutor/services/classification_platform.dart';
 import 'package:aitutor/services/user_services.dart';
 import 'package:aitutor/widgets/dialogs.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:dropdown_button2/dropdown_button2.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:aitutor/services/size_calculate.dart';
 import 'dart:ui' as ui;
 
 class DebateHistoryPage extends StatefulWidget {
-  const DebateHistoryPage({Key? key}) : super(key: key);
+  const DebateHistoryPage({super.key});
 
   @override
   State<DebateHistoryPage> createState() => _DebateHistoryPageState();
@@ -30,7 +32,6 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
       {}; // {Datetime time : {'comment': , 'result': List<DebateResult>}}
   DateTime? _recentTime;
   DateTime? _selectTime;
-  String _selectComment = '';
   String _recentComment = '';
   List<DebateResult> _selectResults = [];
   List<DebateResult> _recentResults = [];
@@ -72,7 +73,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                 : Padding(
                     padding: const EdgeInsets.only(left: 60, right: 60),
                     child: Text(
-                      "${_recentComment}",
+                      _recentComment,
                       style: const TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -102,7 +103,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                       )
                 : Column(
                     children: [
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       recentEvaluateWidget(
                           screenWidth, screenWidth, isWeb, _recentResults),
                       evaluateWidget(
@@ -193,11 +194,13 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Add the header
+          // ----------------------------------------------------------------------
+          // 헤더
+          // ----------------------------------------------------------------------
           Container(
             width: screenWidth,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F1E5E), // 변경된 색상
+            decoration: const BoxDecoration(
+              color: Color(0xFF0F1E5E), // 변경된 색상
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -214,6 +217,9 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
             ),
           ),
           const SizedBox(height: 20),
+          // ----------------------------------------------------------------------
+          // 최근 결과 요약
+          // ----------------------------------------------------------------------
           Text(
             "${_recentTime?.month}월 ${_recentTime?.day}일 ${_userModel.nm ?? ""}님의 비판적 사고능력은 ...",
             style: const TextStyle(
@@ -250,7 +256,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                   Padding(
                     padding: EdgeInsets.only(left: arrowPadding),
                     child: SizedBox(
-                      width: SizeCalculate().widthCalculate(screenWidth, 99),
+                      width: SizeCalculate().widthCalculate(screenWidth, 450),
                       height:
                           SizeCalculate().heightCalculate(screenHeight, 100),
                       child: Image.asset("assets/icons/arrowRed.png"),
@@ -285,15 +291,15 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
           ),
           Row(
             children: evaluationResults.map((evaluationResult) {
-              Color evaluationColor = Colors.grey;
+              // Color evaluationColor = Colors.grey;
 
-              if (evaluationResult.evaluation.toString().contains('상')) {
-                evaluationColor = Colors.green;
-              } else if (evaluationResult.evaluation.toString().contains('중')) {
-                evaluationColor = Colors.orange;
-              } else if (evaluationResult.evaluation.toString().contains('하')) {
-                evaluationColor = Colors.red;
-              }
+              // if (evaluationResult.evaluation.toString().contains('상')) {
+              //   evaluationColor = Colors.green;
+              // } else if (evaluationResult.evaluation.toString().contains('중')) {
+              //   evaluationColor = Colors.orange;
+              // } else if (evaluationResult.evaluation.toString().contains('하')) {
+              //   evaluationColor = Colors.red;
+              // }
 
               // Interaction 번호 처리
               String interaction1 = evaluationResult.interaction1!;
@@ -312,9 +318,9 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
               return Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 10), // 각 박스 간의 간격 조정
+                  padding: const EdgeInsets.only(right: 10),
                   child: Container(
-                    height: maxHeight + 100, // 모든 항목의 높이를 동일하게 설정
+                    height: maxHeight + 250,
                     decoration: BoxDecoration(
                       color: _colorsModel.gr4,
                       border: Border.all(
@@ -326,14 +332,16 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                           color: Colors.grey.withOpacity(0.2),
                           spreadRadius: 2,
                           blurRadius: 4,
-                          offset: Offset(0, 1),
+                          offset: const Offset(0, 1),
                         ),
                       ],
                     ),
+                    // ----------------------------------------------------------------------
+                    // 평가 카테고리
+                    // ----------------------------------------------------------------------
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Category (center aligned, larger font)
                         Container(
                           width: screenWidth,
                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -341,13 +349,12 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                             color: const Color(0xFF0F1E5E),
                             border: Border.all(
                                 color: const Color(0xFF0F1E5E), width: 6),
-                            // borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
                             child: Text(
                               "${evaluationResult.category}",
                               style: const TextStyle(
-                                  fontSize: 24, // 글씨 크기를 키움
+                                  fontSize: 24,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Cafe24Oneprettynight'),
@@ -355,172 +362,175 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                           ),
                         ),
                         const SizedBox(
-                          height: 25,
+                          height: 15,
                         ),
-                        // Explain (left aligned, starts with ":")
-                        // Container(
-                        //   height: maxExplainHeight +
-                        //       40, // 최대 explain 높이를 설정하여 높이를 통일
-                        //   child: Text(
-                        //     ": ${evaluationResult.explain}",
-                        //     style: const TextStyle(
-                        //         fontSize: 16,
-                        //         color: Colors.black,
-                        //         fontFamily: 'Cafe24Oneprettynight'),
-                        //     maxLines: null,
+                        // ----------------------------------------------------------------------
+                        // 평가 결과
+                        // ----------------------------------------------------------------------
+                        // Padding(
+                        //   padding:
+                        //       const EdgeInsets.only(left: 10.0, right: 10.0),
+                        //   child: Align(
+                        //     alignment: Alignment.center,
+                        //     child: Container(
+                        //       width: screenWidth * 0.6,
+                        //       height: 50,
+                        //       decoration: BoxDecoration(
+                        //           color: evaluationColor.withOpacity(0.2)),
+                        //       child: Center(
+                        //         child: Text(
+                        //           "${evaluationResult.evaluation}",
+                        //           style: const TextStyle(
+                        //               fontSize: 24,
+                        //               color: Colors.black,
+                        //               fontWeight: FontWeight.bold,
+                        //               fontFamily: 'Cafe24Oneprettynight'),
+                        //         ),
+                        //       ),
+                        //     ),
                         //   ),
                         // ),
-                        Container(
-                          height: maxExplainHeight +
-                              128, // 최대 explain 높이를 설정하여 높이를 통일
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(left: 10.0, right: 10.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Text(
-                              //   ": ${evaluationResult.explain}",
-                              //   style: const TextStyle(
-                              //       fontSize: 16,
-                              //       color: Colors.black,
-                              //       fontFamily: 'Cafe24Oneprettynight'),
-                              //   maxLines: null,
-                              // ),
-                              SizedBox(
-                                width: screenWidth * 0.1,
-                                height: screenHeight * 0.1,
-                                child: Image.asset(
-                                  evaluationResult.evaluation
-                                          .toString()
-                                          .contains('상')
-                                      ? 'assets/icons/debateHigh.png'
-                                      : evaluationResult.evaluation
-                                              .toString()
-                                              .contains('중')
-                                          ? 'assets/icons/debateMedium.png'
-                                          : 'assets/icons/debateLow.png',
+                              for (var i = 0; i < 3; i++)
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: evaluationResult.evaluation
+                                                .toString()
+                                                .contains(i == 0
+                                                    ? '하'
+                                                    : i == 1
+                                                        ? '중'
+                                                        : '상')
+                                            ? (i == 0
+                                                ? Colors.red.withOpacity(0.2)
+                                                : i == 1
+                                                    ? Colors.orange
+                                                        .withOpacity(0.2)
+                                                    : Colors.green
+                                                        .withOpacity(0.2))
+                                            : Colors.grey.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          i == 0
+                                              ? '부족함(하)'
+                                              : i == 1
+                                                  ? '적절함(중)'
+                                                  : '탁월함(상)',
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            color: Colors.black.withOpacity(
+                                              evaluationResult.evaluation
+                                                      .toString()
+                                                      .contains(i == 0
+                                                          ? '하'
+                                                          : i == 1
+                                                              ? '중'
+                                                              : '상')
+                                                  ? 1.0
+                                                  : 0.3,
+                                            ),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
                         const SizedBox(
-                          height: 25,
-                        ), // Explain 밑에 간격 추가
-                        // Evaluation (center aligned)
-                        Container(
-                            child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, right: 10.0),
-                          child: Align(
-                            alignment: Alignment.center,
+                          height: 10,
+                        ),
+                        // ----------------------------------------------------------------------
+                        // 평가 근거
+                        // ----------------------------------------------------------------------
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
                             child: Container(
                               width: screenWidth * 0.6,
-                              decoration: BoxDecoration(
-                                  // color: const Color(0xFFC3CDF5),
-                                  color: evaluationColor.withOpacity(0.2)),
-                              child: Center(
-                                child: Text(
-                                  "${evaluationResult.evaluation}",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      // color: evaluationColor,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Cafe24Oneprettynight'),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        // Details (left aligned in a white box)
-                        Expanded(
-                          // 이 부분을 추가하여 흰색 박스가 남은 공간을 채우도록 수정
-                          child: Container(
-                            child: Padding(
+                              height: maxHeight,
                               padding: const EdgeInsets.all(10),
-                              child: Container(
-                                width: screenWidth * 0.6,
-                                padding: const EdgeInsets.all(10),
-                                color: Colors.white,
-                                child: SingleChildScrollView(
-                                  // 스크롤 가능하도록 수정
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Title '[평가 근거]'
-                                        const Text(
-                                          "[평가 근거]",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ), // 한줄 띄움
-                                        // Detail
-                                        Text(
-                                          "${evaluationResult.detail}",
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ), // 한줄 띄움
-                                        // Interaction 1
-                                        Text(
-                                          interaction1,
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        // Reason 1 with right arrow
-                                        Text(
-                                          "→ ${evaluationResult.reason1}",
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ), // 한줄 띄움
-                                        // Interaction 2
-                                        Text(
-                                          interaction2,
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        // Reason 2 with right arrow
-                                        Text(
-                                          "→ ${evaluationResult.reason2}",
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                      ],
-                                    ),
+                              color: Colors.white,
+                              child: SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "[평가 근거]",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        "${evaluationResult.detail}",
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      // Interaction 1
+                                      Text(
+                                        interaction1,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      // Reason 1 with right arrow
+                                      Text(
+                                        "→ ${evaluationResult.reason1}",
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ), // 한줄 띄움
+                                      // Interaction 2
+                                      Text(
+                                        interaction2,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      // Reason 2 with right arrow
+                                      Text(
+                                        "→ ${evaluationResult.reason2}",
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -610,18 +620,20 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Add the header
+          // ----------------------------------------------------------------------
+          // 헤더
+          // ----------------------------------------------------------------------
           Container(
             width: screenWidth,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F1E5E), // 변경된 색상
+            decoration: const BoxDecoration(
+              color: Color(0xFF0F1E5E), // 변경된 색상
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
+            child: const Padding(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
               child: Center(
                 child: Text(
                   "지난 결과 조회하기",
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Cafe24Oneprettynight',
@@ -631,17 +643,30 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
             ),
           ),
           const SizedBox(height: 20),
-          // Text(
-          //   "${_recentTime?.month}월 ${_recentTime?.day}일 ${_userModel.nm ?? ""}님의 비판적 사고능력은 ...",
-          //   style: const TextStyle(
-          //       fontSize: 25,
-          //       fontWeight: FontWeight.bold,
-          //       fontFamily: 'Cafe24Oneprettynight'),
-          // ),
+          // ----------------------------------------------------------------------
+          // 날짜 선택
+          // ----------------------------------------------------------------------
           selectDateWidget(screenWidth, isWeb),
+          const SizedBox(
+            height: 20,
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "   ${_selectTime?.month}월 ${_selectTime?.day}일 ${_userModel.nm ?? ""}님의 학업 스트레스는 ...",
+              textAlign: TextAlign.left,
+              style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Cafe24Oneprettynight'),
+            ),
+          ),
           const SizedBox(
             height: 15,
           ),
+          // ----------------------------------------------------------------------
+          // 평가 결과 요약
+          // ----------------------------------------------------------------------
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -668,7 +693,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                   Padding(
                     padding: EdgeInsets.only(left: arrowPadding),
                     child: SizedBox(
-                      width: SizeCalculate().widthCalculate(screenWidth, 99),
+                      width: SizeCalculate().widthCalculate(screenWidth, 450),
                       height:
                           SizeCalculate().heightCalculate(screenHeight, 100),
                       child: Image.asset("assets/icons/arrowRed.png"),
@@ -703,15 +728,15 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
           ),
           Row(
             children: evaluationResults.map((evaluationResult) {
-              Color evaluationColor = Colors.grey;
+              // Color evaluationColor = Colors.grey;
 
-              if (evaluationResult.evaluation.toString().contains('상')) {
-                evaluationColor = Colors.green;
-              } else if (evaluationResult.evaluation.toString().contains('중')) {
-                evaluationColor = Colors.orange;
-              } else if (evaluationResult.evaluation.toString().contains('하')) {
-                evaluationColor = Colors.red;
-              }
+              // if (evaluationResult.evaluation.toString().contains('상')) {
+              //   evaluationColor = Colors.green;
+              // } else if (evaluationResult.evaluation.toString().contains('중')) {
+              //   evaluationColor = Colors.orange;
+              // } else if (evaluationResult.evaluation.toString().contains('하')) {
+              //   evaluationColor = Colors.red;
+              // }
 
               // Interaction 번호 처리
               String interaction1 = evaluationResult.interaction1!;
@@ -730,9 +755,9 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
               return Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 10), // 각 박스 간의 간격 조정
+                  padding: const EdgeInsets.only(right: 10),
                   child: Container(
-                    height: maxHeight + 100, // 모든 항목의 높이를 동일하게 설정
+                    height: maxHeight + 250,
                     decoration: BoxDecoration(
                       color: _colorsModel.gr4,
                       border: Border.all(
@@ -744,14 +769,16 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                           color: Colors.grey.withOpacity(0.2),
                           spreadRadius: 2,
                           blurRadius: 4,
-                          offset: Offset(0, 1),
+                          offset: const Offset(0, 1),
                         ),
                       ],
                     ),
+                    // ----------------------------------------------------------------------
+                    // 평가 카테고리
+                    // ----------------------------------------------------------------------
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Category (center aligned, larger font)
                         Container(
                           width: screenWidth,
                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -759,13 +786,12 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                             color: const Color(0xFF0F1E5E),
                             border: Border.all(
                                 color: const Color(0xFF0F1E5E), width: 6),
-                            // borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
                             child: Text(
                               "${evaluationResult.category}",
                               style: const TextStyle(
-                                  fontSize: 24, // 글씨 크기를 키움
+                                  fontSize: 24,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Cafe24Oneprettynight'),
@@ -773,172 +799,175 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                           ),
                         ),
                         const SizedBox(
-                          height: 25,
+                          height: 15,
                         ),
-                        // Explain (left aligned, starts with ":")
-                        // Container(
-                        //   height: maxExplainHeight +
-                        //       40, // 최대 explain 높이를 설정하여 높이를 통일
-                        //   child: Text(
-                        //     ": ${evaluationResult.explain}",
-                        //     style: const TextStyle(
-                        //         fontSize: 16,
-                        //         color: Colors.black,
-                        //         fontFamily: 'Cafe24Oneprettynight'),
-                        //     maxLines: null,
+                        // ----------------------------------------------------------------------
+                        // 평가 결과
+                        // ----------------------------------------------------------------------
+                        // Padding(
+                        //   padding:
+                        //       const EdgeInsets.only(left: 10.0, right: 10.0),
+                        //   child: Align(
+                        //     alignment: Alignment.center,
+                        //     child: Container(
+                        //       width: screenWidth * 0.6,
+                        //       height: 50,
+                        //       decoration: BoxDecoration(
+                        //           color: evaluationColor.withOpacity(0.2)),
+                        //       child: Center(
+                        //         child: Text(
+                        //           "${evaluationResult.evaluation}",
+                        //           style: const TextStyle(
+                        //               fontSize: 24,
+                        //               color: Colors.black,
+                        //               fontWeight: FontWeight.bold,
+                        //               fontFamily: 'Cafe24Oneprettynight'),
+                        //         ),
+                        //       ),
+                        //     ),
                         //   ),
                         // ),
-                        Container(
-                          height: maxExplainHeight +
-                              128, // 최대 explain 높이를 설정하여 높이를 통일
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(left: 10.0, right: 10.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Text(
-                              //   ": ${evaluationResult.explain}",
-                              //   style: const TextStyle(
-                              //       fontSize: 16,
-                              //       color: Colors.black,
-                              //       fontFamily: 'Cafe24Oneprettynight'),
-                              //   maxLines: null,
-                              // ),
-                              SizedBox(
-                                width: screenWidth * 0.1,
-                                height: screenHeight * 0.1,
-                                child: Image.asset(
-                                  evaluationResult.evaluation
-                                          .toString()
-                                          .contains('상')
-                                      ? 'assets/icons/debateHigh.png'
-                                      : evaluationResult.evaluation
-                                              .toString()
-                                              .contains('중')
-                                          ? 'assets/icons/debateMedium.png'
-                                          : 'assets/icons/stress.png',
+                              for (var i = 0; i < 3; i++)
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: evaluationResult.evaluation
+                                                .toString()
+                                                .contains(i == 0
+                                                    ? '하'
+                                                    : i == 1
+                                                        ? '중'
+                                                        : '상')
+                                            ? (i == 0
+                                                ? Colors.red.withOpacity(0.2)
+                                                : i == 1
+                                                    ? Colors.orange
+                                                        .withOpacity(0.2)
+                                                    : Colors.green
+                                                        .withOpacity(0.2))
+                                            : Colors.grey.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          i == 0
+                                              ? '부족함(하)'
+                                              : i == 1
+                                                  ? '적절함(중)'
+                                                  : '탁월함(상)',
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            color: Colors.black.withOpacity(
+                                              evaluationResult.evaluation
+                                                      .toString()
+                                                      .contains(i == 0
+                                                          ? '하'
+                                                          : i == 1
+                                                              ? '중'
+                                                              : '상')
+                                                  ? 1.0
+                                                  : 0.3,
+                                            ),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
                         const SizedBox(
-                          height: 25,
-                        ), // Explain 밑에 간격 추가
-                        // Evaluation (center aligned)
-                        Container(
-                            child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, right: 10.0),
-                          child: Align(
-                            alignment: Alignment.center,
+                          height: 10,
+                        ),
+                        // ----------------------------------------------------------------------
+                        // 평가 근거
+                        // ----------------------------------------------------------------------
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
                             child: Container(
                               width: screenWidth * 0.6,
-                              decoration: BoxDecoration(
-                                  // color: const Color(0xFFC3CDF5),
-                                  color: evaluationColor.withOpacity(0.2)),
-                              child: Center(
-                                child: Text(
-                                  "${evaluationResult.evaluation}",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      // color: evaluationColor,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Cafe24Oneprettynight'),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        // Details (left aligned in a white box)
-                        Expanded(
-                          // 이 부분을 추가하여 흰색 박스가 남은 공간을 채우도록 수정
-                          child: Container(
-                            child: Padding(
+                              height: maxHeight,
                               padding: const EdgeInsets.all(10),
-                              child: Container(
-                                width: screenWidth * 0.6,
-                                padding: const EdgeInsets.all(10),
-                                color: Colors.white,
-                                child: SingleChildScrollView(
-                                  // 스크롤 가능하도록 수정
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Title '[평가 근거]'
-                                        const Text(
-                                          "[평가 근거]",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ), // 한줄 띄움
-                                        // Detail
-                                        Text(
-                                          "${evaluationResult.detail}",
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ), // 한줄 띄움
-                                        // Interaction 1
-                                        Text(
-                                          interaction1,
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        // Reason 1 with right arrow
-                                        Text(
-                                          "→ ${evaluationResult.reason1}",
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ), // 한줄 띄움
-                                        // Interaction 2
-                                        Text(
-                                          interaction2,
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                        // Reason 2 with right arrow
-                                        Text(
-                                          "→ ${evaluationResult.reason2}",
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily:
-                                                  'Cafe24Oneprettynight'),
-                                        ),
-                                      ],
-                                    ),
+                              color: Colors.white,
+                              child: SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "[평가 근거]",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        "${evaluationResult.detail}",
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      // Interaction 1
+                                      Text(
+                                        interaction1,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      // Reason 1 with right arrow
+                                      Text(
+                                        "→ ${evaluationResult.reason1}",
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      // Interaction 2
+                                      Text(
+                                        interaction2,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                      // Reason 2 with right arrow
+                                      Text(
+                                        "→ ${evaluationResult.reason2}",
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Cafe24Oneprettynight'),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -957,8 +986,8 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
     );
   }
 
-  Widget selectDateWidget(screenWidth, isWeb) {
-    bool _isExpanded = false;
+  Widget selectDateWidget(double screenWidth, bool isWeb) {
+    bool isExpanded = false;
     return StatefulBuilder(builder: (BuildContext context, stateSetter) {
       return Padding(
         padding: isWeb
@@ -983,7 +1012,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: _colorsModel.gr3, width: 1),
-                borderRadius: _isExpanded
+                borderRadius: isExpanded
                     ? const BorderRadius.only(
                         topLeft: Radius.circular(8),
                         topRight: Radius.circular(8))
@@ -995,7 +1024,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                   itemHighlightColor: _colorsModel.main.withOpacity(0.7),
                   buttonDecoration: BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: _isExpanded
+                    borderRadius: isExpanded
                         ? const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8))
@@ -1009,20 +1038,20 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                       child: Image.asset("assets/icons/caret_down.png"),
                     ),
                   ),
-                  itemPadding: EdgeInsets.only(left: 0),
+                  itemPadding: const EdgeInsets.only(left: 0),
                   dropdownMaxHeight: 200,
                   onMenuStateChange: (changed) {
                     stateSetter(() {
-                      _isExpanded = changed;
+                      isExpanded = changed;
                     });
                   },
                   dropdownDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                         bottomRight: Radius.circular(8),
                         bottomLeft: Radius.circular(8)),
                     color: _colorsModel.wh,
                   ),
-                  hint: Container(
+                  hint: SizedBox(
                     height: 50,
                     child: Center(
                       child: Padding(
@@ -1045,7 +1074,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                               padding: const EdgeInsets.only(left: 15.0),
                               child: FittedBox(
                                 child: Text(
-                                  '${formatDateTime(item)}',
+                                  formatDateTime(item),
                                   style: TextStyle(
                                       fontSize: 20,
                                       color: _colorsModel.gr1,
@@ -1057,19 +1086,16 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                       .toList(),
                   value: _selectTime,
                   onChanged: (value) {
-                    String comment = '';
                     List<DebateResult> results = [];
 
                     if (_historyMap.isNotEmpty) {
                       Map dataMap = _historyMap[value] ?? {};
-                      comment = dataMap['comment'] ?? '';
                       results =
                           List<DebateResult>.from(dataMap['result'] ?? []);
                     }
 
                     setState(() {
                       _selectTime = value;
-                      _selectComment = comment;
                       _selectResults = results;
                     });
                   },
@@ -1126,11 +1152,6 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
           DateTime? selectTime;
           DateTime? recentTime;
-          String comment = '';
-          List<DebateResult> results = [];
-          DebateResult selectResult = DebateResult();
-          DebateResult recentResult = DebateResult();
-          String selectComment = '';
           String recentComment = '';
           List<DebateResult> selectResults = [];
           List<DebateResult> recentResults = [];
@@ -1142,7 +1163,6 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
               selectTime = timeList[1];
 
               Map selectResultMap = historyMap[selectTime] ?? {};
-              selectComment = selectResultMap['comment'] ?? '';
               selectResults =
                   List<DebateResult>.from(selectResultMap['result'] ?? []);
             }
@@ -1153,11 +1173,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
             recentResults =
                 List<DebateResult>.from(recentResultMap['result'] ?? []);
 
-            if (selectTime != null) {
-              Map dataMap = historyMap[selectTime] ?? {};
-              comment = dataMap['comment'] ?? '';
-              results = List<DebateResult>.from(dataMap['result'] ?? []);
-            }
+            if (selectTime != null) {}
           }
 
           setState(() {
@@ -1165,12 +1181,12 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
             _recentTime = recentTime;
             _selectTime = selectTime;
             _recentComment = recentComment;
-            _selectComment = selectComment;
             _recentResults = recentResults;
             _selectResults = selectResults;
           });
         } else {
           Dialogs().onlyContentOneActionDialog(
+              // ignore: use_build_context_synchronously
               context: context,
               content: '기록 로드 중 오류\n${historyResList.last}',
               firstText: '확인');
@@ -1194,29 +1210,29 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
   }
 
   String getAverageResult(List<DebateResult> results) {
-    int count_high = 0;
-    int count_medium = 0;
-    int count_low = 0;
+    int countHigh = 0;
+    int countMedium = 0;
+    int countLow = 0;
 
     for (DebateResult result in results) {
       if (result.evaluation.toString().contains('상')) {
-        count_high++;
+        countHigh++;
       } else if (result.evaluation.toString().contains('중')) {
-        count_medium++;
+        countMedium++;
       } else if (result.evaluation.toString().contains('하')) {
-        count_low++;
+        countLow++;
       }
     }
 
-    if (count_high == 4) {
+    if (countHigh == 4) {
       return '탁월함';
-    } else if ((count_high > 1) && (count_medium > 1) && (count_low < 1)) {
+    } else if ((countHigh > 1) && (countMedium > 1) && (countLow < 1)) {
       return '우수함';
-    } else if (count_medium == 4) {
+    } else if (countMedium == 4) {
       return '적절함';
-    } else if ((count_medium < 1) && (count_low > 1) && (count_high > 1)) {
+    } else if ((countMedium < 1) && (countLow > 1) && (countHigh > 1)) {
       return '보통';
-    } else if (count_low == 4) {
+    } else if (countLow == 4) {
       return '미흡함';
     } else {
       return '해당 없음';
