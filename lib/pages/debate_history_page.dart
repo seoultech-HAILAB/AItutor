@@ -994,6 +994,13 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
   Widget selectDateWidget(double screenWidth, bool isWeb) {
     bool isExpanded = false;
     return StatefulBuilder(builder: (BuildContext context, stateSetter) {
+      // Get all dates except the most recent one
+      List<DateTime> dates = _historyMap.keys.toList().cast<DateTime>();
+      dates.sort((a, b) => b.compareTo(a)); // Sort in descending order
+      if (dates.isNotEmpty) {
+        dates.removeAt(0); // Remove the most recent date
+      }
+
       return Padding(
         padding: isWeb
             ? const EdgeInsets.only(left: 0, right: 0)
@@ -1071,8 +1078,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                       ),
                     ),
                   ),
-                  items: _historyMap.keys
-                      .toList()
+                  items: dates
                       .map((item) => DropdownMenuItem<DateTime>(
                             value: item,
                             child: Padding(
