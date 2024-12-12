@@ -5,6 +5,61 @@ import 'package:aitutor/models/user_model.dart';
 import 'package:aitutor/services/user_services.dart';
 import 'package:aitutor/widgets/dialogs.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+
+String parseSubmittedText(String rawData) {
+  // JSON 포맷에서 텍스트 추출
+  String cleanedText = rawData
+      .replaceAll('[{"insert":"', '') // 초반 불필요 텍스트 제거
+      .replaceAll('"}]', '') // 마지막 불필요 텍스트 제거
+      .replaceAll('\\n', '\n'); // \n을 실제 줄바꿈으로 변환
+
+  return cleanedText;
+}
+
+List<TextSpan> parseRichText(String text) {
+  // **문자**와 \"문자\", 그리고 숫자를 모두 볼드 처리하는 정규식
+  final regex = RegExp(r'(\*\*(.+?)\*\*|\\\"(.+?)\\\"|\d+)');
+  final matches = regex.allMatches(text);
+
+  List<TextSpan> spans = [];
+  int lastIndex = 0;
+
+  for (var match in matches) {
+    // 일반 텍스트 추가
+    if (lastIndex < match.start) {
+      spans.add(TextSpan(text: text.substring(lastIndex, match.start)));
+    }
+    // 볼드체 텍스트 추가
+    String? boldText = match.group(2) ?? match.group(3) ?? match.group(0); // **문자**, \"문자\", 또는 숫자 추출
+    if (boldText != null) {
+      spans.add(TextSpan(
+        text: boldText,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ));
+    }
+    lastIndex = match.end;
+  }
+  // 남은 일반 텍스트 추가
+  if (lastIndex < text.length) {
+    spans.add(TextSpan(text: text.substring(lastIndex)));
+  }
+
+  return spans;
+}
+
+String removeLastEvaluation(String text) {
+  // 마지막 줄에 평가 결과가 포함되어 있으면 제거
+  final lastLinePattern = RegExp(r'\*\*평가:\s.+?\*\*$', multiLine: true);
+  text = text.replaceAll(lastLinePattern, '').trim();
+
+  // '-' 기호 제거
+  text = text.replaceAll(RegExp(r'\s*-\s*'), '\n');
+
+  return text.trim(); // 양쪽 공백 제거
+}
+
 
 class ArgumentHistoryPage extends StatefulWidget {
   const ArgumentHistoryPage({Key? key}) : super(key: key);
@@ -277,7 +332,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFe0e6f8),
+        color: Colors.white,
         border: Border.all(
           color: const Color(0xFF0F1E5E),
           width: 4,
@@ -310,10 +365,6 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
               ),
             ),
           ),
-<<<<<<< HEAD
-=======
-          const SizedBox(height: 20),
->>>>>>> 949d27a1c420da8f40d4bc6a4e85ce517038a60e
           // 내용부는 스크롤 가능하도록 SingleChildScrollView 적용
           Padding(
             padding: const EdgeInsets.all(10),
@@ -321,54 +372,74 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-<<<<<<< HEAD
-                    "[제출한 글쓰기 내용]",
-=======
-                    "[작성 내용]",
->>>>>>> 949d27a1c420da8f40d4bc6a4e85ce517038a60e
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Cafe24Oneprettynight',
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFe0e6f8), // 하늘색 배경
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "제출한 글쓰기 내용",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight',
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    evaluation['contents'] ?? '작성 내용 없음',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontFamily: 'Cafe24Oneprettynight',
+                  const SizedBox(height: 5),
+                  Container(
+                    height: 200, // 박스 높이 지정
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xFF0F1E5E), width: 2),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: SingleChildScrollView(
+                      child: RichText(
+                        text: TextSpan(
+                          children: parseRichText(parseSubmittedText(evaluation['contents'] ?? '작성 내용 없음')),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Cafe24Oneprettynight',
+                            color: Colors.black, // 기본 텍스트 색상
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-<<<<<<< HEAD
-                    "[평가 근거]",
-=======
-                    "[평가 결과]",
->>>>>>> 949d27a1c420da8f40d4bc6a4e85ce517038a60e
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Cafe24Oneprettynight',
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFe0e6f8), // 하늘색 배경
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "평가 근거",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight',
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    evaluation['response'] ?? '평가 결과 없음',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontFamily: 'Cafe24Oneprettynight',
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "시간: ${evaluation['time']}",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Cafe24Oneprettynight',
+                  const SizedBox(height: 5),
+                  RichText(
+                    text: TextSpan(
+                      children: parseRichText(
+                        removeLastEvaluation(
+                          evaluation['response'] ?? '평가 근거 없음',
+                        ),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Cafe24Oneprettynight',
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ],
