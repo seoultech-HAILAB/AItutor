@@ -310,6 +310,10 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
               ),
             ),
           ),
+<<<<<<< HEAD
+=======
+          const SizedBox(height: 20),
+>>>>>>> 949d27a1c420da8f40d4bc6a4e85ce517038a60e
           // 내용부는 스크롤 가능하도록 SingleChildScrollView 적용
           Padding(
             padding: const EdgeInsets.all(10),
@@ -318,7 +322,11 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
+<<<<<<< HEAD
                     "[제출한 글쓰기 내용]",
+=======
+                    "[작성 내용]",
+>>>>>>> 949d27a1c420da8f40d4bc6a4e85ce517038a60e
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -335,7 +343,11 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                   ),
                   const SizedBox(height: 20),
                   const Text(
+<<<<<<< HEAD
                     "[평가 근거]",
+=======
+                    "[평가 결과]",
+>>>>>>> 949d27a1c420da8f40d4bc6a4e85ce517038a60e
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
