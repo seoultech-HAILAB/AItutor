@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:aitutor/services/auth_service.dart';
+import 'package:aitutor/models/user_model.dart'; // UserModel import
+import 'package:aitutor/services/user_services.dart'; // UserServices import
+import 'package:aitutor/services/chat_services.dart'; // ChatServices import
+import 'package:aitutor/widgets/dialogs.dart'; // Dialogs import
 import 'package:intl/intl.dart';
 
 class ArgumentHistoryPage extends StatefulWidget {
@@ -12,11 +16,43 @@ class ArgumentHistoryPage extends StatefulWidget {
 
 class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
   late Future<List<Map<String, dynamic>>> _evaluationHistory;
+  UserModel _userModel = UserModel();
+  bool _loading = false;
 
   @override
   void initState() {
     super.initState();
+    userInit();
+  }
+
+  // 사용자 정보를 불러오는 메서드
+  Future<void> userInit() async {
+    setState(() {
+      _loading = true;
+    });
+
+    // 사용자 정보 로드
+    List resList = await UserServices().getUserModel(uid: AuthService().getUid());
+
+    if (resList.first) {
+      setState(() {
+        _userModel = resList.last;
+      });
+    } else {
+      // 사용자 정보 로드 실패 시 Dialog를 띄우거나 에러 처리
+      Dialogs().onlyContentOneActionDialog(
+        context: context,
+        content: '사용자 정보를 불러오는 중 오류가 발생했습니다.\n${resList.last}',
+        firstText: '확인',
+      );
+    }
+
+    // 사용자 정보를 로드한 뒤 평가 히스토리 로드를 진행
     _evaluationHistory = _loadEvaluationHistory();
+
+    setState(() {
+      _loading = false;
+    });
   }
 
   Future<List<Map<String, dynamic>>> _loadEvaluationHistory() async {
@@ -40,25 +76,18 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
       };
     }).toList();
 
+    // 시간 기준으로 내림차순 정렬
     evaluations.sort((a, b) {
-      DateTime? aTime = _tryParseDateTime(a['time']);
-      DateTime? bTime = _tryParseDateTime(b['time']);
-      if (aTime != null && bTime != null) {
-        return bTime.compareTo(aTime);
-      }
-      return 0;
+      // 기존 tryParseDateTime 제거 후 그대로 사용
+      // 여기서는 정렬이 필요하다면 time 문자열을 파싱해서 비교 가능
+      // time 형식: YYYYMMDD_HHmmss
+      String timeA = a['time'];
+      String timeB = b['time'];
+      // 최신 순 정렬: timeB.compareTo(timeA)
+      return timeB.compareTo(timeA);
     });
 
     return evaluations;
-  }
-
-  DateTime? _tryParseDateTime(String time) {
-    // 실제 데이터 포맷에 맞게 수정 필요
-    try {
-      return DateFormat("yyyy-MM-dd HH:mm:ss").parse(time);
-    } catch (_) {
-      return null;
-    }
   }
 
   String _extractRating(String response) {
@@ -104,132 +133,154 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
     }
   }
 
+  /// "20241210_165457" 형식의 문자열을 "12월 10일" 형태로 포맷하는 메서드
+  String _formatDateFromString(String rawTime) {
+    // rawTime: "YYYYMMDD_HHmmss" 형식 가정
+    // 예: "20241210_165457" -> year=2024, month=12, day=10
+    // month월 day일
+    if (rawTime.length >= 8) {
+      String monthStr = rawTime.substring(4, 6);
+      String dayStr = rawTime.substring(6, 8);
+
+      int month = int.tryParse(monthStr) ?? 0;
+      int day = int.tryParse(dayStr) ?? 0;
+      return "${month}월 ${day}일";
+    }
+    return "";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _evaluationHistory,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-                child: Text(
-              "Error: ${snapshot.error}",
-              style: const TextStyle(fontFamily: 'Cafe24Oneprettynight'),
-            ));
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            final evaluations = snapshot.data!;
-            final averageResult = _getAverageResult(evaluations);
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : FutureBuilder<List<Map<String, dynamic>>>(
+              future: _evaluationHistory,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Error: ${snapshot.error}",
+                    style: const TextStyle(fontFamily: 'Cafe24Oneprettynight'),
+                  ));
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  final evaluations = snapshot.data!;
+                  final averageResult = _getAverageResult(evaluations);
 
-            Color averageColor = Colors.black;
-            if (averageResult == '탁월함') {
-              averageColor = Colors.green;
-            } else if (averageResult == '우수함') {
-              averageColor = Colors.green[300]!;
-            } else if (averageResult == '적절함') {
-              averageColor = Colors.orange;
-            } else if (averageResult == '보통') {
-              averageColor = Colors.orange[300]!;
-            } else if (averageResult == '미흡함') {
-              averageColor = Colors.red;
-            }
+                  Color averageColor = Colors.black;
+                  if (averageResult == '탁월함') {
+                    averageColor = Colors.green;
+                  } else if (averageResult == '우수함') {
+                    averageColor = Colors.green[300]!;
+                  } else if (averageResult == '적절함') {
+                    averageColor = Colors.orange;
+                  } else if (averageResult == '보통') {
+                    averageColor = Colors.orange[300]!;
+                  } else if (averageResult == '미흡함') {
+                    averageColor = Colors.red;
+                  }
 
-            // 가장 최근 기록 날짜
-            DateTime? recentDate;
-            if (evaluations.isNotEmpty) {
-              recentDate = _tryParseDateTime(evaluations.first['time']);
-            }
+                  // 가장 최근 기록 시간 문자열
+                  String? recentTimeStr;
+                  if (evaluations.isNotEmpty) {
+                    recentTimeStr = evaluations.first['time'];
+                  }
 
-            double screenWidth = MediaQuery.of(context).size.width;
-            double screenHeight = MediaQuery.of(context).size.height;
+                  double screenWidth = MediaQuery.of(context).size.width;
+                  double screenHeight = MediaQuery.of(context).size.height;
 
-            return ListView(
-              shrinkWrap: true,
-              physics: const ClampingScrollPhysics(),
-              children: [
-                // 상단 헤더
-                Container(
-                  width: screenWidth,
-                  color: const Color(0xFF0F1E5E),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: const Center(
-                    child: Text(
-                      "글쓰기 평가 기록",
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight',
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                if (recentDate != null)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 60, right: 60),
-                    child: Text(
-                      "${recentDate.month}월 ${recentDate.day}일의 평가 결과, 당신의 비판적 사고능력은 ...",
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight',
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildDebateIconWithArrow(screenWidth, screenHeight),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15, bottom: 50),
-                      child: RichText(
-                          text: TextSpan(children: [
-                        TextSpan(
-                          text: averageResult,
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: averageColor,
-                            fontFamily: 'Cafe24Oneprettynight',
+                  return ListView(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    children: [
+                      // 상단 헤더
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15), // 좌우 10 공백 추가
+                        child: Container(
+                          width: screenWidth,
+                          color: const Color(0xFF0F1E5E),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Center(
+                            child: Text(
+                              "${_userModel.nm ?? ""}님의 글쓰기 역량",
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Cafe24Oneprettynight',
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                        const TextSpan(
-                          text: ' 정도의 비판적 사고능력을 보여주고 있어요!',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Cafe24Oneprettynight',
-                            color: Colors.black,
+                      ),
+                      const SizedBox(height: 20),
+                      if (recentTimeStr != null && recentTimeStr.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 60),
+                          child: Text(
+                            "   ${_formatDateFromString(recentTimeStr)} ${_userModel.nm ?? ""}의 글쓰기 역량은 ...",
+                            style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Cafe24Oneprettynight',
+                            ),
                           ),
                         ),
-                      ])),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildDebateIconWithArrow(screenWidth, screenHeight),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 15, bottom: 50),
+                            child: RichText(
+                                text: TextSpan(children: [
+                              TextSpan(
+                                text: averageResult,
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: averageColor,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' 정도의 비판적 사고능력을 보여주고 있어요!',
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ])),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      // 평가 리스트 출력: GridView로 변경
+                      _buildEvaluationGrid(evaluations, screenWidth),
+                      const SizedBox(height: 20),
+                    ],
+                  );
+                } else {
+                  return const Center(
+                    child: Text(
+                      "데이터가 없습니다.",
+                      style: TextStyle(fontFamily: 'Cafe24Oneprettynight'),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // 평가 리스트 출력: GridView로 변경
-                _buildEvaluationGrid(evaluations, screenWidth),
-                const SizedBox(height: 20),
-              ],
-            );
-          } else {
-            return const Center(
-              child: Text(
-                "데이터가 없습니다.",
-                style: TextStyle(fontFamily: 'Cafe24Oneprettynight'),
-              ),
-            );
-          }
-        },
-      ),
+                  );
+                }
+              },
+            ),
     );
   }
 
   Widget _buildDebateIconWithArrow(double screenWidth, double screenHeight) {
-    double debateImageWidth = screenWidth * 0.5 > 402 ? 402 : screenWidth * 0.5;
+    double debateImageWidth =
+        screenWidth * 0.5 > 402 ? 402 : screenWidth * 0.5;
     double arrowPadding = (debateImageWidth - 99) / 2;
 
     return Stack(
@@ -242,7 +293,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
               child: SizedBox(
                 width: debateImageWidth,
                 height: debateImageWidth * (208 / 402),
-                child: Image.asset("assets/icons/debateIcon.png"),
+                child: Image.asset("asset/icons/argumentIcon.png"),
               ),
             ),
             const SizedBox(height: 70),
@@ -261,8 +312,6 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
   }
 
   Widget _buildEvaluationGrid(List<Map<String, dynamic>> evaluations, double screenWidth) {
-    // GridView로 변환하여 자식들을 일정 크기로 배치
-    // shrinkWrap와 NeverScrollableScrollPhysics로 내부 스크롤 방지 (상위 ListView에만 스크롤 위임)
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: GridView.builder(
