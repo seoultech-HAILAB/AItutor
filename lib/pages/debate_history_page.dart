@@ -254,9 +254,9 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: arrowPadding),
+                    padding: EdgeInsets.only(left: arrowPadding, bottom: 20),
                     child: SizedBox(
-                      width: SizeCalculate().widthCalculate(screenWidth, 450),
+                      width: SizeCalculate().widthCalculate(screenWidth, 470),
                       height:
                           SizeCalculate().heightCalculate(screenHeight, 100),
                       child: Image.asset("assets/icons/arrowRed.png"),
@@ -691,9 +691,9 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: arrowPadding),
+                    padding: EdgeInsets.only(left: arrowPadding, bottom: 20),
                     child: SizedBox(
-                      width: SizeCalculate().widthCalculate(screenWidth, 450),
+                      width: SizeCalculate().widthCalculate(screenWidth, 470),
                       height:
                           SizeCalculate().heightCalculate(screenHeight, 100),
                       child: Image.asset("assets/icons/arrowRed.png"),
