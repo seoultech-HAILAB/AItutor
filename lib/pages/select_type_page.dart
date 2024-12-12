@@ -72,7 +72,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-                      childAspectRatio: 3 / 2, //item 의 가로, 세로의 비율 TODO: 여기야!
+                      childAspectRatio: 3 / 1.5, //item 의 가로, 세로의 비율 TODO: 여기야!
                       mainAxisSpacing: 30, //수직 Padding
                       crossAxisSpacing: 100, //수평 Padding
                     ),
