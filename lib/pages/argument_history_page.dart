@@ -1,11 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:aitutor/services/auth_service.dart';
-import 'package:aitutor/models/user_model.dart'; // UserModel import
-import 'package:aitutor/services/user_services.dart'; // UserServices import
-import 'package:aitutor/services/chat_services.dart'; // ChatServices import
-import 'package:aitutor/widgets/dialogs.dart'; // Dialogs import
+import 'package:aitutor/models/user_model.dart';
+import 'package:aitutor/services/user_services.dart';
+import 'package:aitutor/widgets/dialogs.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+
+String parseSubmittedText(String rawData) {
+  // JSON 포맷에서 텍스트 추출
+  String cleanedText = rawData
+      .replaceAll('[{"insert":"', '') // 초반 불필요 텍스트 제거
+      .replaceAll('"}]', '') // 마지막 불필요 텍스트 제거
+      .replaceAll('\\n', '\n'); // \n을 실제 줄바꿈으로 변환
+
+  return cleanedText;
+}
+
+List<TextSpan> parseRichText(String text) {
+  // **문자**와 \"문자\", 그리고 숫자를 모두 볼드 처리하는 정규식
+  final regex = RegExp(r'(\*\*(.+?)\*\*|\\\"(.+?)\\\"|\d+)');
+  final matches = regex.allMatches(text);
+
+  List<TextSpan> spans = [];
+  int lastIndex = 0;
+
+  for (var match in matches) {
+    // 일반 텍스트 추가
+    if (lastIndex < match.start) {
+      spans.add(TextSpan(text: text.substring(lastIndex, match.start)));
+    }
+    // 볼드체 텍스트 추가
+    String? boldText = match.group(2) ?? match.group(3) ?? match.group(0); // **문자**, \"문자\", 또는 숫자 추출
+    if (boldText != null) {
+      spans.add(TextSpan(
+        text: boldText,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ));
+    }
+    lastIndex = match.end;
+  }
+  // 남은 일반 텍스트 추가
+  if (lastIndex < text.length) {
+    spans.add(TextSpan(text: text.substring(lastIndex)));
+  }
+
+  return spans;
+}
+
+String removeLastEvaluation(String text) {
+  // 마지막 줄에 평가 결과가 포함되어 있으면 제거
+  final lastLinePattern = RegExp(r'\*\*평가:\s.+?\*\*$', multiLine: true);
+  text = text.replaceAll(lastLinePattern, '').trim();
+
+  // '-' 기호 제거
+  text = text.replaceAll(RegExp(r'\s*-\s*'), '\n');
+
+  return text.trim(); // 양쪽 공백 제거
+}
+
 
 class ArgumentHistoryPage extends StatefulWidget {
   const ArgumentHistoryPage({Key? key}) : super(key: key);
@@ -25,13 +79,11 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
     userInit();
   }
 
-  // 사용자 정보를 불러오는 메서드
   Future<void> userInit() async {
     setState(() {
       _loading = true;
     });
 
-    // 사용자 정보 로드
     List resList = await UserServices().getUserModel(uid: AuthService().getUid());
 
     if (resList.first) {
@@ -39,7 +91,6 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
         _userModel = resList.last;
       });
     } else {
-      // 사용자 정보 로드 실패 시 Dialog를 띄우거나 에러 처리
       Dialogs().onlyContentOneActionDialog(
         context: context,
         content: '사용자 정보를 불러오는 중 오류가 발생했습니다.\n${resList.last}',
@@ -47,7 +98,6 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
       );
     }
 
-    // 사용자 정보를 로드한 뒤 평가 히스토리 로드를 진행
     _evaluationHistory = _loadEvaluationHistory();
 
     setState(() {
@@ -56,13 +106,13 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadEvaluationHistory() async {
-    final uid = AuthService().getUid(); // 유저의 uid 가져오기
+    final uid = AuthService().getUid();
     final DatabaseReference dbRef =
         FirebaseDatabase.instance.ref('Chat/AI 글쓰기 튜터/History/$uid/AI LAW');
     final snapshot = await dbRef.get();
 
     if (!snapshot.exists) {
-      return []; // 데이터가 없을 경우 빈 리스트 반환
+      return [];
     }
 
     final data = Map<String, dynamic>.from(snapshot.value as Map);
@@ -76,14 +126,10 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
       };
     }).toList();
 
-    // 시간 기준으로 내림차순 정렬
+    // 가장 최근 항목이 first가 되도록 정렬
     evaluations.sort((a, b) {
-      // 기존 tryParseDateTime 제거 후 그대로 사용
-      // 여기서는 정렬이 필요하다면 time 문자열을 파싱해서 비교 가능
-      // time 형식: YYYYMMDD_HHmmss
       String timeA = a['time'];
       String timeB = b['time'];
-      // 최신 순 정렬: timeB.compareTo(timeA)
       return timeB.compareTo(timeA);
     });
 
@@ -101,43 +147,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
     return "알 수 없음";
   }
 
-  String _getAverageResult(List<Map<String, dynamic>> evaluations) {
-    int countHigh = 0;
-    int countMedium = 0;
-    int countLow = 0;
-
-    for (var eval in evaluations) {
-      String rating = eval['rating'];
-      if (rating == '상') {
-        countHigh++;
-      } else if (rating == '중') {
-        countMedium++;
-      } else if (rating == '하') {
-        countLow++;
-      }
-    }
-
-    // 단순한 예시 로직
-    if (countHigh == evaluations.length) {
-      return '탁월함';
-    } else if (countHigh > 1 && countMedium > 1 && countLow < 1) {
-      return '우수함';
-    } else if (countMedium == evaluations.length) {
-      return '적절함';
-    } else if (countMedium < 1 && countLow > 1 && countHigh > 1) {
-      return '보통';
-    } else if (countLow == evaluations.length) {
-      return '미흡함';
-    } else {
-      return '해당 없음';
-    }
-  }
-
-  /// "20241210_165457" 형식의 문자열을 "12월 10일" 형태로 포맷하는 메서드
   String _formatDateFromString(String rawTime) {
-    // rawTime: "YYYYMMDD_HHmmss" 형식 가정
-    // 예: "20241210_165457" -> year=2024, month=12, day=10
-    // month월 day일
     if (rawTime.length >= 8) {
       String monthStr = rawTime.substring(4, 6);
       String dayStr = rawTime.substring(6, 8);
@@ -147,6 +157,19 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
       return "${month}월 ${day}일";
     }
     return "";
+  }
+
+  Color _getRatingColor(String rating) {
+    switch (rating) {
+      case "상":
+        return Colors.green;
+      case "중":
+        return Colors.orange;
+      case "하":
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 
   @override
@@ -161,109 +184,101 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(
-                      child: Text(
-                    "Error: ${snapshot.error}",
-                    style: const TextStyle(fontFamily: 'Cafe24Oneprettynight'),
-                  ));
+                    child: Text(
+                      "Error: ${snapshot.error}",
+                      style: const TextStyle(fontFamily: 'Cafe24Oneprettynight'),
+                    ),
+                  );
                 } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   final evaluations = snapshot.data!;
-                  final averageResult = _getAverageResult(evaluations);
-
-                  Color averageColor = Colors.black;
-                  if (averageResult == '탁월함') {
-                    averageColor = Colors.green;
-                  } else if (averageResult == '우수함') {
-                    averageColor = Colors.green[300]!;
-                  } else if (averageResult == '적절함') {
-                    averageColor = Colors.orange;
-                  } else if (averageResult == '보통') {
-                    averageColor = Colors.orange[300]!;
-                  } else if (averageResult == '미흡함') {
-                    averageColor = Colors.red;
-                  }
-
-                  // 가장 최근 기록 시간 문자열
-                  String? recentTimeStr;
-                  if (evaluations.isNotEmpty) {
-                    recentTimeStr = evaluations.first['time'];
-                  }
+                  final recent = evaluations.first; // 가장 최근 평가
+                  final recentRating = recent['rating'] ?? '알 수 없음';
+                  final recentTimeStr = recent['time'] ?? '';
+                  final recentDate = _formatDateFromString(recentTimeStr);
 
                   double screenWidth = MediaQuery.of(context).size.width;
                   double screenHeight = MediaQuery.of(context).size.height;
 
-                  return ListView(
-                    shrinkWrap: true,
-                    physics: const ClampingScrollPhysics(),
-                    children: [
-                      // 상단 헤더
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15), // 좌우 10 공백 추가
-                        child: Container(
-                          width: screenWidth,
-                          color: const Color(0xFF0F1E5E),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Center(
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 상단 헤더
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Container(
+                            width: screenWidth,
+                            color: const Color(0xFF0F1E5E),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Center(
+                              child: Text(
+                                "${_userModel.nm ?? ""}님의 글쓰기 역량",
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Cafe24Oneprettynight',
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        if (recentTimeStr.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15, right: 15),
                             child: Text(
-                              "${_userModel.nm ?? ""}님의 글쓰기 역량",
+                              "$recentDate ${_userModel.nm ?? ""}의 글쓰기 역량은 ...",
                               style: const TextStyle(
-                                fontSize: 30,
+                                fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Cafe24Oneprettynight',
-                                color: Colors.white,
                               ),
                             ),
                           ),
+                        const SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildDebateIconWithArrow(screenWidth, screenHeight),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15, bottom: 50),
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: recentRating,
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold,
+                                        color: _getRatingColor(recentRating),
+                                        fontFamily: 'Cafe24Oneprettynight',
+                                      ),
+                                    ),
+                                    const TextSpan(
+                                      text: ' 등급으로 평가되어요!',
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Cafe24Oneprettynight',
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      if (recentTimeStr != null && recentTimeStr.isNotEmpty)
+                        const SizedBox(height: 20),
+                        // 최근 평가 1개 카드만 보여주기
                         Padding(
-                          padding: const EdgeInsets.only(left: 10, right: 60),
-                          child: Text(
-                            "   ${_formatDateFromString(recentTimeStr)} ${_userModel.nm ?? ""}의 글쓰기 역량은 ...",
-                            style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Cafe24Oneprettynight',
-                            ),
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: _buildEvaluationCard(recent),
                         ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildDebateIconWithArrow(screenWidth, screenHeight),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 15, bottom: 50),
-                            child: RichText(
-                                text: TextSpan(children: [
-                              TextSpan(
-                                text: averageResult,
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: averageColor,
-                                  fontFamily: 'Cafe24Oneprettynight',
-                                ),
-                              ),
-                              const TextSpan(
-                                text: ' 정도의 비판적 사고능력을 보여주고 있어요!',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Cafe24Oneprettynight',
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ])),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      // 평가 리스트 출력: GridView로 변경
-                      _buildEvaluationGrid(evaluations, screenWidth),
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   );
                 } else {
                   return const Center(
@@ -293,16 +308,16 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
               child: SizedBox(
                 width: debateImageWidth,
                 height: debateImageWidth * (208 / 402),
-                child: Image.asset("asset/icons/argumentIcon.png"),
+                child: Image.asset("assets/icons/argumentIcon.png"),
               ),
             ),
             const SizedBox(height: 70),
           ],
         ),
         Padding(
-          padding: EdgeInsets.only(left: arrowPadding),
+          padding: EdgeInsets.only(left: arrowPadding, bottom: 10),
           child: SizedBox(
-            width: 99,
+            width: 160,
             height: 100,
             child: Image.asset("assets/icons/arrowRed.png"),
           ),
@@ -311,46 +326,13 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
     );
   }
 
-  Widget _buildEvaluationGrid(List<Map<String, dynamic>> evaluations, double screenWidth) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: evaluations.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: (screenWidth > 800) ? 4 : 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 0.7, // 카드 비율 조정
-        ),
-        itemBuilder: (context, index) {
-          final evaluation = evaluations[index];
-          return _buildEvaluationCard(evaluation);
-        },
-      ),
-    );
-  }
-
   Widget _buildEvaluationCard(Map<String, dynamic> evaluation) {
     String rating = evaluation['rating'] ?? '알 수 없음';
-    Color evaluationColor = Colors.grey;
-    String imagePath = 'assets/icons/debateLow.png';
-
-    if (rating == '상') {
-      evaluationColor = Colors.green;
-      imagePath = 'assets/icons/debateHigh.png';
-    } else if (rating == '중') {
-      evaluationColor = Colors.orange;
-      imagePath = 'assets/icons/debateMedium.png';
-    } else if (rating == '하') {
-      evaluationColor = Colors.red;
-      imagePath = 'assets/icons/debateLow.png';
-    }
+    Color evaluationColor = _getRatingColor(rating);
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFe0e6f8),
+        color: Colors.white,
         border: Border.all(
           color: const Color(0xFF0F1E5E),
           width: 4,
@@ -365,15 +347,15 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // 내용에 맞게 크기 결정
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 상단 헤더
           Container(
             color: const Color(0xFF0F1E5E),
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: const Center(
+            child: Center(
               child: Text(
-                "평가 등급",
+                "평가 결과: $rating 등급",
                 style: TextStyle(
                   fontSize: 24,
                   color: Colors.white,
@@ -383,89 +365,84 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 60,
-                height: 60,
-                child: Image.asset(imagePath),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
+          // 내용부는 스크롤 가능하도록 SingleChildScrollView 적용
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Container(
-              color: evaluationColor.withOpacity(0.2),
-              padding: const EdgeInsets.all(8),
-              child: Center(
-                child: Text(
-                  "$rating 등급",
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Cafe24Oneprettynight',
+            padding: const EdgeInsets.all(10),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFe0e6f8), // 하늘색 배경
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "제출한 글쓰기 내용",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cafe24Oneprettynight',
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "[작성 내용]",
+                  const SizedBox(height: 5),
+                  Container(
+                    height: 200, // 박스 높이 지정
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xFF0F1E5E), width: 2),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: SingleChildScrollView(
+                      child: RichText(
+                        text: TextSpan(
+                          children: parseRichText(parseSubmittedText(evaluation['contents'] ?? '작성 내용 없음')),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Cafe24Oneprettynight',
+                            color: Colors.black, // 기본 텍스트 색상
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFe0e6f8), // 하늘색 배경
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "평가 근거",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Cafe24Oneprettynight',
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      evaluation['contents'] ?? '작성 내용 없음',
+                  ),
+                  const SizedBox(height: 5),
+                  RichText(
+                    text: TextSpan(
+                      children: parseRichText(
+                        removeLastEvaluation(
+                          evaluation['response'] ?? '평가 근거 없음',
+                        ),
+                      ),
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 20,
                         fontFamily: 'Cafe24Oneprettynight',
+                        color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "[평가 결과]",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      evaluation['response'] ?? '평가 결과 없음',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Cafe24Oneprettynight',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "시간: ${evaluation['time']}",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cafe24Oneprettynight',
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
