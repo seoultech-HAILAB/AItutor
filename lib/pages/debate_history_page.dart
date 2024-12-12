@@ -567,14 +567,19 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
 
     if (averageResult == '탁월함') {
       averageColor = Colors.green;
+      arrowPadding = 325; // Move arrow to rightmost position
     } else if (averageResult == '우수함') {
       averageColor = Colors.green[300]!;
+      arrowPadding = 250; // Move arrow to right position
     } else if (averageResult == '적절함') {
       averageColor = Colors.orange;
+      arrowPadding = 170; // Move arrow to center position
     } else if (averageResult == '보통') {
       averageColor = Colors.orange[300]!;
+      arrowPadding = 95; // Move arrow to left position
     } else if (averageResult == '미흡함') {
       averageColor = Colors.red;
+      arrowPadding = 15; // Move arrow to leftmost position
     }
 
     // 각 evaluationResult의 explain 부분을 기준으로 가장 큰 높이를 계산
@@ -698,7 +703,7 @@ class _DebateHistoryPageState extends State<DebateHistoryPage> {
                   Padding(
                     padding: EdgeInsets.only(left: arrowPadding, bottom: 20),
                     child: SizedBox(
-                      width: SizeCalculate().widthCalculate(screenWidth, 470),
+                      width: SizeCalculate().widthCalculate(screenWidth, 120),
                       height:
                           SizeCalculate().heightCalculate(screenHeight, 100),
                       child: Image.asset("assets/icons/arrowRed.png"),
