@@ -7,19 +7,19 @@ import 'package:aitutor/widgets/dialogs.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:aitutor/models/colors_model.dart'; // 추가된 부분
+import 'package:dropdown_button2/dropdown_button2.dart'; // 추가된 부분
+import 'dart:ui' as ui; // 추가된 부분
 
 String parseSubmittedText(String rawData) {
-  // JSON 포맷에서 텍스트 추출
   String cleanedText = rawData
-      .replaceAll('[{"insert":"', '') // 초반 불필요 텍스트 제거
-      .replaceAll('"}]', '') // 마지막 불필요 텍스트 제거
-      .replaceAll('\\n', '\n'); // \n을 실제 줄바꿈으로 변환
-
+      .replaceAll('[{"insert":"', '')
+      .replaceAll('"}]', '')
+      .replaceAll('\\n', '\n');
   return cleanedText;
 }
 
 List<TextSpan> parseRichText(String text) {
-  // **문자**와 \"문자\", 그리고 숫자를 모두 볼드 처리하는 정규식
   final regex = RegExp(r'(\*\*(.+?)\*\*|\\\"(.+?)\\\"|\d+)');
   final matches = regex.allMatches(text);
 
@@ -27,12 +27,10 @@ List<TextSpan> parseRichText(String text) {
   int lastIndex = 0;
 
   for (var match in matches) {
-    // 일반 텍스트 추가
     if (lastIndex < match.start) {
       spans.add(TextSpan(text: text.substring(lastIndex, match.start)));
     }
-    // 볼드체 텍스트 추가
-    String? boldText = match.group(2) ?? match.group(3) ?? match.group(0); // **문자**, \"문자\", 또는 숫자 추출
+    String? boldText = match.group(2) ?? match.group(3) ?? match.group(0);
     if (boldText != null) {
       spans.add(TextSpan(
         text: boldText,
@@ -41,7 +39,7 @@ List<TextSpan> parseRichText(String text) {
     }
     lastIndex = match.end;
   }
-  // 남은 일반 텍스트 추가
+
   if (lastIndex < text.length) {
     spans.add(TextSpan(text: text.substring(lastIndex)));
   }
@@ -50,16 +48,11 @@ List<TextSpan> parseRichText(String text) {
 }
 
 String removeLastEvaluation(String text) {
-  // 마지막 줄에 평가 결과가 포함되어 있으면 제거
   final lastLinePattern = RegExp(r'\*\*평가:\s.+?\*\*$', multiLine: true);
   text = text.replaceAll(lastLinePattern, '').trim();
-
-  // '-' 기호 제거
   text = text.replaceAll(RegExp(r'\s*-\s*'), '\n');
-
-  return text.trim(); // 양쪽 공백 제거
+  return text.trim();
 }
-
 
 class ArgumentHistoryPage extends StatefulWidget {
   const ArgumentHistoryPage({Key? key}) : super(key: key);
@@ -72,6 +65,15 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
   late Future<List<Map<String, dynamic>>> _evaluationHistory;
   UserModel _userModel = UserModel();
   bool _loading = false;
+
+  // 추가된 부분 시작 -----------------------------------------
+  final ColorsModel _colorsModel = ColorsModel();
+  Map<DateTime, Map<String, dynamic>> _historyMap = {};
+  DateTime? _recentTime;
+  DateTime? _selectTime;
+  Map<String, dynamic> _recentEvaluation = {};
+  Map<String, dynamic> _selectEvaluation = {};
+  // 추가된 부분 끝 -------------------------------------------
 
   @override
   void initState() {
@@ -100,6 +102,28 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
 
     _evaluationHistory = _loadEvaluationHistory();
 
+    List<Map<String, dynamic>> evaluations = await _evaluationHistory;
+    if (evaluations.isNotEmpty) {
+      // Map으로 관리
+      for (var eval in evaluations) {
+        DateTime dt = _parseDateTimeFromString(eval['time']);
+        _historyMap[dt] = eval;
+      }
+
+      List<DateTime> timeList = _historyMap.keys.toList();
+      timeList.sort((a, b) => b.compareTo(a));
+
+      _recentTime = timeList.isNotEmpty ? timeList.first : null;
+      _recentEvaluation = _recentTime != null ? _historyMap[_recentTime]! : {};
+
+      // 지난 결과용 selectTime 설정(가장 최근 외 하나가 있다면 두번째로 최근값)
+      if (timeList.length > 1) {
+        _selectTime = timeList[1];
+        _selectEvaluation = _historyMap[_selectTime]!;
+      }
+
+    }
+
     setState(() {
       _loading = false;
     });
@@ -126,7 +150,6 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
       };
     }).toList();
 
-    // 가장 최근 항목이 first가 되도록 정렬
     evaluations.sort((a, b) {
       String timeA = a['time'];
       String timeB = b['time'];
@@ -147,16 +170,45 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
     return "알 수 없음";
   }
 
-  String _formatDateFromString(String rawTime) {
+  DateTime _parseDateTimeFromString(String rawTime) {
+    // rawTime: YYYYMMDDHHMMSS 형식 가정
+    // 실제 DB 구조에 따라 수정 필요할 수 있음
     if (rawTime.length >= 8) {
+      String yearStr = rawTime.substring(0, 4);
       String monthStr = rawTime.substring(4, 6);
       String dayStr = rawTime.substring(6, 8);
 
-      int month = int.tryParse(monthStr) ?? 0;
-      int day = int.tryParse(dayStr) ?? 0;
-      return "${month}월 ${day}일";
+      int year = int.tryParse(yearStr) ?? 2000;
+      int month = int.tryParse(monthStr) ?? 1;
+      int day = int.tryParse(dayStr) ?? 1;
+
+      int hour = 0;
+      int minute = 0;
+      int second = 0;
+
+      if (rawTime.length >= 10) {
+        hour = int.tryParse(rawTime.substring(8, 10)) ?? 0;
+      }
+      if (rawTime.length >= 12) {
+        minute = int.tryParse(rawTime.substring(10, 12)) ?? 0;
+      }
+      if (rawTime.length >= 14) {
+        second = int.tryParse(rawTime.substring(12, 14)) ?? 0;
+      }
+
+      return DateTime(year, month, day, hour, minute, second);
     }
-    return "";
+    return DateTime.now();
+  }
+
+  String _formatDateFromDateTime(DateTime dateTime) {
+    String year = DateFormat('yyyy').format(dateTime);
+    String month = DateFormat('MM').format(dateTime);
+    String day = DateFormat('dd').format(dateTime);
+    String hour = DateFormat('hh').format(dateTime);
+    String period = DateFormat('a').format(dateTime) == 'AM' ? '오전' : '오후';
+
+    return '$year년 $month월 $day일 $period $hour시';
   }
 
   Color _getRatingColor(String rating) {
@@ -174,129 +226,207 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : FutureBuilder<List<Map<String, dynamic>>>(
-              future: _evaluationHistory,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      "Error: ${snapshot.error}",
-                      style: const TextStyle(fontFamily: 'Cafe24Oneprettynight'),
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 상단 헤더
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Container(
+                      width: screenWidth,
+                      color: const Color(0xFF0F1E5E),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Center(
+                        child: Text(
+                          "${_userModel.nm ?? ""}님의 글쓰기 역량",
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Cafe24Oneprettynight',
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  );
-                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  final evaluations = snapshot.data!;
-                  final recent = evaluations.first; // 가장 최근 평가
-                  final recentRating = recent['rating'] ?? '알 수 없음';
-                  final recentTimeStr = recent['time'] ?? '';
-                  final recentDate = _formatDateFromString(recentTimeStr);
-
-                  double screenWidth = MediaQuery.of(context).size.width;
-                  double screenHeight = MediaQuery.of(context).size.height;
-
-                  return SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  const SizedBox(height: 20),
+                  // 최근 결과 표시
+                  if (_recentTime != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15, right: 15),
+                      child: Text(
+                        "${_recentTime?.month}월 ${_recentTime?.day}일 ${_userModel.nm ?? ""}의 글쓰기 역량은 ...",
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cafe24Oneprettynight',
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 15),
+                  if (_recentEvaluation.isNotEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // 상단 헤더
+                        _buildDebateIconWithArrow(
+                            screenWidth, screenHeight, _recentEvaluation),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Container(
-                            width: screenWidth,
-                            color: const Color(0xFF0F1E5E),
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Center(
-                              child: Text(
-                                "${_userModel.nm ?? ""}님의 글쓰기 역량",
-                                style: const TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Cafe24Oneprettynight',
-                                  color: Colors.white,
+                          padding:
+                              const EdgeInsets.only(left: 15, bottom: 50),
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: _recentEvaluation['rating'] ?? '알 수 없음',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: _getRatingColor(
+                                        _recentEvaluation['rating'] ?? ''),
+                                    fontFamily: 'Cafe24Oneprettynight',
+                                  ),
                                 ),
-                              ),
+                                const TextSpan(
+                                  text: ' 등급으로 평가되어요!',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cafe24Oneprettynight',
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        if (recentTimeStr.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 15),
-                            child: Text(
-                              "$recentDate ${_userModel.nm ?? ""}의 글쓰기 역량은 ...",
-                              style: const TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Cafe24Oneprettynight',
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildDebateIconWithArrow(screenWidth, screenHeight),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15, bottom: 50),
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: recentRating,
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                        color: _getRatingColor(recentRating),
-                                        fontFamily: 'Cafe24Oneprettynight',
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                      text: ' 등급으로 평가되어요!',
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Cafe24Oneprettynight',
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        // 최근 평가 1개 카드만 보여주기
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: _buildEvaluationCard(recent),
-                        ),
-                        const SizedBox(height: 20),
                       ],
                     ),
-                  );
-                } else {
-                  return const Center(
-                    child: Text(
-                      "데이터가 없습니다.",
-                      style: TextStyle(fontFamily: 'Cafe24Oneprettynight'),
+                  const SizedBox(height: 20),
+                  if (_recentEvaluation.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: _buildEvaluationCard(_recentEvaluation),
                     ),
-                  );
-                }
-              },
+                  const SizedBox(height: 20),
+                  // 추가된 부분 시작: 지난 결과 조회하기 ---------------------------------
+                  if (_historyMap.length > 1) // 기록이 2개 이상일 경우에만 지난 결과 조회
+                    Container(
+                      width: screenWidth,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF0F1E5E),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Center(
+                          child: Text(
+                            "지난 결과 조회하기",
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Cafe24Oneprettynight',
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (_historyMap.length > 1)
+                    const SizedBox(height: 20),
+                  if (_historyMap.length > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15, right: 15),
+                      child: selectDateWidget(screenWidth),
+                    ),
+                  if (_historyMap.length > 1 && _selectTime != null)
+                    const SizedBox(height: 20),
+                  if (_historyMap.length > 1 && _selectTime != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15, right: 15),
+                      child: Text(
+                        "   ${_selectTime?.month}월 ${_selectTime?.day}일 ${_userModel.nm ?? ""}의 글쓰기 역량은 ...",
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cafe24Oneprettynight',
+                        ),
+                      ),
+                    ),
+                  if (_historyMap.length > 1 && _selectTime != null)
+                    const SizedBox(height: 15),
+                  if (_historyMap.length > 1 && _selectTime != null)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildDebateIconWithArrow(
+                            screenWidth, screenHeight, _selectEvaluation),
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(left: 15, bottom: 50),
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: _selectEvaluation['rating'] ?? '알 수 없음',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: _getRatingColor(
+                                        _selectEvaluation['rating'] ?? ''),
+                                    fontFamily: 'Cafe24Oneprettynight',
+                                  ),
+                                ),
+                                const TextSpan(
+                                  text: ' 등급으로 평가되어요!',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cafe24Oneprettynight',
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (_historyMap.length > 1 && _selectTime != null)
+                    const SizedBox(height: 20),
+                  if (_historyMap.length > 1 && _selectTime != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: _buildEvaluationCard(_selectEvaluation),
+                    ),
+                  const SizedBox(height: 20),
+                  // 추가된 부분 끝: 지난 결과 조회하기 -----------------------------------
+                ],
+              ),
             ),
     );
   }
 
-  Widget _buildDebateIconWithArrow(double screenWidth, double screenHeight) {
+  Widget _buildDebateIconWithArrow(
+      double screenWidth, double screenHeight, Map<String, dynamic> evaluation) {
     double debateImageWidth =
         screenWidth * 0.5 > 402 ? 402 : screenWidth * 0.5;
-    double arrowPadding = (debateImageWidth - 99) / 2;
+    double arrowPadding = 0.0;
+
+    String recentRating = evaluation['rating'] ?? '알 수 없음';
+
+    if (recentRating == '상') {
+      arrowPadding = 300;
+    } else if (recentRating == '중') {
+      arrowPadding = 155;
+    } else if (recentRating == '하') {
+      arrowPadding = 6;
+    }
 
     return Stack(
       alignment: Alignment.bottomLeft,
@@ -328,7 +458,6 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
 
   Widget _buildEvaluationCard(Map<String, dynamic> evaluation) {
     String rating = evaluation['rating'] ?? '알 수 없음';
-    Color evaluationColor = _getRatingColor(rating);
 
     return Container(
       decoration: BoxDecoration(
@@ -347,7 +476,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // 내용에 맞게 크기 결정
+        mainAxisSize: MainAxisSize.min, 
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
@@ -356,7 +485,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
             child: Center(
               child: Text(
                 "평가 결과: $rating 등급",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -365,7 +494,6 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
               ),
             ),
           ),
-          // 내용부는 스크롤 가능하도록 SingleChildScrollView 적용
           Padding(
             padding: const EdgeInsets.all(10),
             child: SingleChildScrollView(
@@ -376,7 +504,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Color(0xFFe0e6f8), // 하늘색 배경
+                      color: const Color(0xFFe0e6f8),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Text(
@@ -390,7 +518,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                   ),
                   const SizedBox(height: 5),
                   Container(
-                    height: 200, // 박스 높이 지정
+                    height: 200,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -404,7 +532,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontFamily: 'Cafe24Oneprettynight',
-                            color: Colors.black, // 기본 텍스트 색상
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -415,7 +543,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Color(0xFFe0e6f8), // 하늘색 배경
+                      color: const Color(0xFFe0e6f8),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Text(
@@ -450,4 +578,122 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
       ),
     );
   }
+
+  // 추가된 부분 시작: selectDateWidget -----------------------------------------
+  Widget selectDateWidget(double screenWidth) {
+    bool isExpanded = false;
+    return StatefulBuilder(builder: (BuildContext context, stateSetter) {
+      // 최근 기록 제외
+      List<DateTime> dates = _historyMap.keys.toList();
+      dates.sort((a, b) => b.compareTo(a));
+      if (dates.isNotEmpty) {
+        dates.removeAt(0);
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "날짜 선택",
+            style: TextStyle(
+                fontSize: 20,
+                color: _colorsModel.gr1,
+                fontFamily: 'Cafe24Oneprettynight'),
+          ),
+          const SizedBox(height: 5),
+          Container(
+            height: 60,
+            width: screenWidth,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: _colorsModel.gr3, width: 1),
+              borderRadius: isExpanded
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8))
+                  : const BorderRadius.all(Radius.circular(8)),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton2(
+                selectedItemHighlightColor: _colorsModel.selectedBoxColor,
+                itemHighlightColor: _colorsModel.main.withOpacity(0.7),
+                buttonDecoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: isExpanded
+                      ? const BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8))
+                      : const BorderRadius.all(Radius.circular(8)),
+                ),
+                icon: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Image.asset("assets/icons/caret_down.png"),
+                  ),
+                ),
+                itemPadding: const EdgeInsets.only(left: 0),
+                dropdownMaxHeight: 200,
+                onMenuStateChange: (changed) {
+                  stateSetter(() {
+                    isExpanded = changed;
+                  });
+                },
+                dropdownDecoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(8),
+                      bottomLeft: Radius.circular(8)),
+                  color: _colorsModel.wh,
+                ),
+                hint: SizedBox(
+                  height: 50,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: Text(
+                        '날짜를 선택해주세요',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: _colorsModel.gr1,
+                            fontFamily: 'Cafe24Oneprettynight'),
+                      ),
+                    ),
+                  ),
+                ),
+                items: dates
+                    .map((item) => DropdownMenuItem<DateTime>(
+                          value: item,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 15.0),
+                            child: FittedBox(
+                              child: Text(
+                                _formatDateFromDateTime(item),
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: _colorsModel.gr1,
+                                    fontFamily: 'Cafe24Oneprettynight'),
+                              ),
+                            ),
+                          ),
+                        ))
+                    .toList(),
+                value: _selectTime,
+                onChanged: (value) {
+                  setState(() {
+                    _selectTime = value;
+                    _selectEvaluation = _historyMap[_selectTime] ?? {};
+                  });
+                },
+                buttonHeight: 40,
+                buttonWidth: 90,
+                itemHeight: 40,
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+  // 추가된 부분 끝: selectDateWidget -----------------------------------------
 }
