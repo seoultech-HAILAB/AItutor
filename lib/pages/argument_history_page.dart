@@ -519,6 +519,7 @@ class _ArgumentHistoryPageState extends State<ArgumentHistoryPage> {
                   const SizedBox(height: 5),
                   Container(
                     height: 200,
+                    width: double.infinity,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.white,
