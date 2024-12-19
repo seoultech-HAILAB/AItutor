@@ -149,7 +149,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
                           fontFamily: 'Cafe24Oneprettynight'),
                     ),
                     Text(
-                      "${_linkedTimeMap[chatModel.key] ?? "${chatModel.key}과 대화해보세요!"}",
+                      "${_linkedTimeMap[chatModel.key] ?? "${chatModel.key}와 대화해보세요!"}",
                       style: TextStyle(
                           fontSize: 25,
                           color: const Color(0xff3d3d3d),
